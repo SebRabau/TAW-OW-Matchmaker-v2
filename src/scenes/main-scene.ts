@@ -17,8 +17,6 @@ export class MainScene extends Phaser.Scene
 
     protected create(): void
     {
-        //this.game.stage.backgroundColor = "#fff";
-        
         this._background = this.add.image(0, 0, "background");
         this._background.setOrigin(0, 0);
         this._background.setDisplaySize(this.game.canvas.width, this.game.canvas.height);
