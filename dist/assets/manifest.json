@@ -1,0 +1,18 @@
+{
+    "preload":
+    {
+        "files":
+        [
+            {
+                "type": "image",
+                "key": "background",
+                "url": "./background.png"
+            },
+            {
+                "type": "image",
+                "key": "logo",
+                "url": "./logo.png"
+            }
+        ]
+    }
+}
