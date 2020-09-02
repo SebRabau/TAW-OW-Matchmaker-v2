@@ -1,9 +1,19 @@
 {
-    "compilerOptions": {
+    "compilerOptions":
+    {
         "target": "es5",
         "moduleResolution": "node"
     },
-    "include": [
+    "include":
+    [
         "./src/**/*"
+    ],
+    "typeRoots":
+    [
+        "./node_modules/phaser/types"
+    ],
+    "types":
+    [
+        "Phaser"
     ]
 }
