@@ -15,6 +15,10 @@ This quick-start project template combines Phaser 3 with [TypeScript](https://ww
 | `npm run dev` | Builds project and open web server, but do not watch for changes |
 | `npm run build` | Builds code bundle with production settings (minification, no source maps, etc..) |
 
+## Accessing properties in dev tools
+
+e.g. MyGame.game.scene.scenes[0]._inputArea
+
 ## Writing Code
 
 After cloning the repo, run `npm install` from your project directory. Then, you can start the local development
