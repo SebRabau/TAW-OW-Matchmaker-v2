@@ -6,12 +6,12 @@
             {
                 "type": "image",
                 "key": "background",
-                "url": "./background.png"
+                "url": "./assets/images/background.png"
             },
             {
                 "type": "image",
                 "key": "logo",
-                "url": "./logo.png"
+                "url": "./assets/images/logo.png"
             }
         ]
     }
