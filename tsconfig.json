@@ -2,7 +2,14 @@
     "compilerOptions":
     {
         "target": "es5",
-        "moduleResolution": "node"
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "inlineSourceMap": false,
+        "inlineSources": true,
+        "experimentalDecorators": true,
+        "declaration": true,
+        "declarationMap": true,
+        "noEmitHelpers": true
     },
     "include":
     [
