@@ -2,25 +2,18 @@
     "compilerOptions":
     {
         "target": "es5",
-        "moduleResolution": "node",
+        "lib":
+        [
+            "dom",
+            "es2015.promise",
+            "es5"
+        ],
+        "outFile": "build/app.js",
         "sourceMap": true,
-        "inlineSourceMap": false,
-        "inlineSources": true,
-        "experimentalDecorators": true,
-        "declaration": true,
-        "declarationMap": true,
-        "noEmitHelpers": true
+        "rootDir": "src",
+        "strict": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true
     },
-    "include":
-    [
-        "./src/**/*"
-    ],
-    "typeRoots":
-    [
-        "./node_modules/phaser/types"
-    ],
-    "types":
-    [
-        "Phaser"
-    ]
+    "include": ["src"]
 }

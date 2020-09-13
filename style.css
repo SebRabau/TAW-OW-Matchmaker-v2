@@ -1,0 +1,120 @@
+html
+{
+    padding: 0px;
+    margin: 0px;
+    margin-right: auto;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14;
+    background: url("https://static.playoverwatch.com/img/crystal-candy-bg-top-e64823cff8.jpg") fixed center !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+}
+
+.title
+{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+    max-height: 300px;
+}
+
+.footer
+{
+    display: block;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    margin-left: -150px;
+    width: 300px;
+    max-width: 100%;
+}
+
+#Attendance
+{
+    resize: none;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+    max-height: 300px;
+}
+
+#Generate
+{
+    box-shadow: inset 0px 1px 0px 0px #de9b14;
+    background-color: #de9b14;
+    cursor: pointer;
+    color: #ffffff;
+    font-family: Arial;
+    font-size: 25px;
+    font-weight: bold;
+    padding: 15px 40px;
+    text-decoration: none;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+    max-height: 300px;
+}
+
+#Generate:hover
+{
+    background-color: #f5c25d;
+}
+
+#Generate:active
+{
+    position: relative;
+    top: 1px;
+}
+
+#Settings
+{
+    box-shadow: inset 0px 1px 0px 0px #ffffff;
+    background-color: #ededed;
+    display: block;
+    cursor: pointer;
+    color: #777777;
+    font-family: Arial;
+    font-size: 25px;
+    font-weight: bold;
+    padding: 5px 5px 0px 5px;
+    text-decoration: none;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+    max-height: 300px;
+}
+
+#Settings:hover
+{
+    background-color: #dfdfdf;
+}
+
+#Return
+{
+    box-shadow: inset 0px 1px 0px 0px #ffffff;
+    background-color: #ededed;
+    cursor: pointer;
+    color: #777777;
+    font-family: Arial;
+    font-size: 25px;
+    font-weight: bold;
+    padding: 5px 53px 0px 5px;
+    text-decoration: none;
+    display: block;
+    position: absolute;
+    bottom: 130px;
+    left: 50%;
+    margin-left: -25px;
+    width: 50px;
+    max-width: 100%;
+}
+
+#Return:hover
+{
+    background-color: #dfdfdf;
+}
