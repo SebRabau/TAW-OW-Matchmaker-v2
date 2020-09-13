@@ -2,9 +2,13 @@ namespace Matchmaker
 {
     export class Player
     {
-        protected _callsign: string;
-        protected _SR: Player.SR;
-        protected _roles: Player.Roles;
+        protected readonly _callsign: string;
+        protected readonly _SR: Player.SR;
+        protected readonly _roles: Player.Roles;
+
+        public get callsign() { return this._callsign; }
+        public get SR() { return this._SR; }
+        public get roles() { return this._roles; }
 
         constructor(callsign: string, SR: Player.SR, roles: Player.Roles)
         {

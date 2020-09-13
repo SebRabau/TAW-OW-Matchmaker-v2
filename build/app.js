@@ -39,7 +39,7 @@ var Matchmaker;
 (function (Matchmaker_1) {
     var Matchmaker = /** @class */ (function () {
         function Matchmaker() {
-            this._attendance = null;
+            this._attendedPlayers = [];
         }
         Matchmaker.prototype.run = function () {
             return __awaiter(this, void 0, void 0, function () {
@@ -84,17 +84,32 @@ var Matchmaker;
                 this.error("Element not found");
                 return false;
             }
-            if (attendance.innerText.length === 0) {
+            if (attendance.value.length === 0) {
                 this.error("Attendance not supplied. Paste event attendance in the text area.");
                 return false;
             }
-            return this.parseAttendance(attendance.innerText);
+            return this.parseAttendance(attendance.value);
         };
         /**
          * Parse attendance into usable map.
          * @param attendance Attendance from textarea
          */
         Matchmaker.prototype.parseAttendance = function (attendance) {
+            var _this = this;
+            var map = [];
+            // Map attendance
+            var lines = attendance.split("\n");
+            lines.forEach(function (l) {
+                var elems = l.split("\t");
+                map.push(elems);
+            });
+            // Store attended people
+            map.forEach(function (e) {
+                // Check map element is not invalid data
+                if (e.length === 3 && e[0] != "Name" && e[1] === "attended") {
+                    _this._attendedPlayers.push(e[0]);
+                }
+            });
             return true;
         };
         Matchmaker.prototype.error = function (msg) {
@@ -118,6 +133,21 @@ var Matchmaker;
             this._SR = SR;
             this._roles = roles;
         }
+        Object.defineProperty(Player.prototype, "callsign", {
+            get: function () { return this._callsign; },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Player.prototype, "SR", {
+            get: function () { return this._SR; },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Player.prototype, "roles", {
+            get: function () { return this._roles; },
+            enumerable: false,
+            configurable: true
+        });
         return Player;
     }());
     Matchmaker.Player = Player;

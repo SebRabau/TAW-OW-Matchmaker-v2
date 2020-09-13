@@ -2,7 +2,7 @@ namespace Matchmaker
 {
     export class Matchmaker
     {
-        protected _attendance: HTMLElement | null = null;
+        protected _attendedPlayers: String[] = [];
 
         constructor() {}
 
@@ -48,7 +48,7 @@ namespace Matchmaker
          */
         protected getAttendance(): boolean
         {
-            const attendance = document.getElementById("Attendance");
+            const attendance = document.getElementById("Attendance") as HTMLTextAreaElement;
 
             if (!attendance)
             {
@@ -56,13 +56,13 @@ namespace Matchmaker
                 return false;
             }
 
-            if (attendance.innerText.length === 0)
+            if (attendance.value.length === 0)
             {
                 this.error("Attendance not supplied. Paste event attendance in the text area.");
                 return false;
             }
 
-            return this.parseAttendance(attendance.innerText);
+            return this.parseAttendance(attendance.value);
         }
 
         /**
@@ -71,6 +71,26 @@ namespace Matchmaker
          */
         protected parseAttendance(attendance: string):boolean
         {
+            const map: String[][] = [];
+
+            // Map attendance
+            const lines = attendance.split("\n");
+            lines.forEach((l) =>
+            {
+                const elems = l.split("\t");
+                map.push(elems);
+            });
+
+            // Store attended people
+            map.forEach((e) =>
+            {
+                // Check map element is not invalid data
+                if (e.length === 3 && e[0] != "Name" && e[1] === "attended")
+                {
+                    this._attendedPlayers.push(e[0]);
+                }
+            });
+
             return true;
         }
 
