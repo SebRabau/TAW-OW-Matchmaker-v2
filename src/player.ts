@@ -24,7 +24,8 @@ namespace Matchmaker
         {
             TANK,
             DPS,
-            SUP
+            SUP,
+            NONE
         }
 
         export interface Roles
@@ -32,7 +33,7 @@ namespace Matchmaker
             tank: boolean;
             dps: boolean;
             sup: boolean;
-            preffered: Role.SUP
+            preffered: Role;
         }
 
         export interface SR
