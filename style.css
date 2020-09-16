@@ -21,6 +21,13 @@ html
     max-height: 300px;
 }
 
+.centre
+{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .footer
 {
     display: block;

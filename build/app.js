@@ -39,16 +39,17 @@ var Matchmaker;
 (function (Matchmaker_1) {
     var Matchmaker = /** @class */ (function () {
         function Matchmaker() {
-            this._attendedPlayers = [];
         }
         Matchmaker.prototype.run = function () {
             return __awaiter(this, void 0, void 0, function () {
+                var valid;
                 return __generator(this, function (_a) {
                     if (!this.showButton(false)) {
                         // Do not run matchmaker
                         throw Error("Matchmaker is Already Running");
                     }
-                    if (!this.getAttendance()) {
+                    valid = new Matchmaker_1.Parser(this).getAttendance();
+                    if (!valid) {
                         // Do not run matchmaker
                         throw Error;
                     }
@@ -75,47 +76,6 @@ var Matchmaker;
             // Continue
             return true;
         };
-        /**
-         * Get Attendance from the textarea.
-         */
-        Matchmaker.prototype.getAttendance = function () {
-            var attendance = document.getElementById("Attendance");
-            if (!attendance) {
-                this.error("Element not found");
-                return false;
-            }
-            if (attendance.value.length === 0) {
-                this.error("Attendance not supplied. Paste event attendance in the text area.");
-                return false;
-            }
-            return this.parseAttendance(attendance.value);
-        };
-        /**
-         * Parse attendance into usable map.
-         * @param attendance Attendance from textarea
-         */
-        Matchmaker.prototype.parseAttendance = function (attendance) {
-            var _this = this;
-            var map = [];
-            // Map attendance
-            var lines = attendance.split("\n");
-            lines.forEach(function (l) {
-                var elems = l.split("\t");
-                map.push(elems);
-            });
-            // Store attended people
-            map.forEach(function (e) {
-                // Check map element is not invalid data
-                if (e.length === 3 && e[0] != "Name" && e[1] === "attended") {
-                    _this._attendedPlayers.push(e[0]);
-                }
-            });
-            return true;
-        };
-        Matchmaker.prototype.error = function (msg) {
-            this.showButton(true);
-            alert(msg);
-        };
         return Matchmaker;
     }());
     Matchmaker_1.Matchmaker = Matchmaker;
@@ -125,6 +85,78 @@ function start() {
     var matchmaker = new Matchmaker.Matchmaker();
     matchmaker.run();
 }
+var Matchmaker;
+(function (Matchmaker) {
+    var Parser = /** @class */ (function () {
+        function Parser(context) {
+            this.context = context;
+        }
+        /**
+         * Get Attendance from the textarea.
+         */
+        Parser.prototype.getAttendance = function () {
+            var attendance = document.getElementById("Attendance");
+            if (!attendance) {
+                this.error("Element not found");
+                return false;
+            }
+            if (attendance.value.length === 0) {
+                this.error("Attendance not supplied. Paste event attendance in the text area.");
+                return false;
+            }
+            var players = this.parseAttendance(attendance.value);
+            if (!players) {
+                this.error("Error parsing Attendance");
+                return false;
+            }
+            else {
+                this.listAvailablePlayers(players);
+            }
+            return true;
+        };
+        /**
+         * Parse attendance into usable map.
+         * @param attendance Attendance from textarea
+         */
+        Parser.prototype.parseAttendance = function (attendance) {
+            var map = [];
+            var players = [];
+            // Map attendance
+            var lines = attendance.split("\n");
+            lines.forEach(function (l) {
+                var elems = l.split("\t");
+                map.push(elems);
+            });
+            // Store attended people
+            map.forEach(function (e) {
+                // Check map element is not invalid data
+                if (e.length === 3 && e[0] != "Name" && e[1] === "attended" && e[0].indexOf("#") === -1) {
+                    players.push(e[0]);
+                }
+            });
+            return players;
+        };
+        Parser.prototype.listAvailablePlayers = function (players) {
+            var parent = document.getElementById("Attendance");
+            if (parent) {
+                var list_1 = "Available players: \n\n";
+                players.forEach(function (p) {
+                    list_1 = list_1 + p.toString() + "\n";
+                });
+                list_1 = list_1.slice(0, list_1.length - 1);
+                parent.value = list_1;
+                parent.disabled = true;
+                parent.scrollTop = 0;
+            }
+        };
+        Parser.prototype.error = function (msg) {
+            this.context.showButton(true);
+            alert(msg);
+        };
+        return Parser;
+    }());
+    Matchmaker.Parser = Parser;
+})(Matchmaker || (Matchmaker = {}));
 var Matchmaker;
 (function (Matchmaker) {
     var Player = /** @class */ (function () {
@@ -157,6 +189,7 @@ var Matchmaker;
             Role[Role["TANK"] = 0] = "TANK";
             Role[Role["DPS"] = 1] = "DPS";
             Role[Role["SUP"] = 2] = "SUP";
+            Role[Role["NONE"] = 3] = "NONE";
         })(Role = Player.Role || (Player.Role = {}));
     })(Player = Matchmaker.Player || (Matchmaker.Player = {}));
 })(Matchmaker || (Matchmaker = {}));

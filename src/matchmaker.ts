@@ -2,8 +2,6 @@ namespace Matchmaker
 {
     export class Matchmaker
     {
-        protected _attendedPlayers: String[] = [];
-
         constructor() {}
 
         public async run()
@@ -14,12 +12,13 @@ namespace Matchmaker
                 throw Error("Matchmaker is Already Running");
             }
 
-            if (!this.getAttendance())
+            const valid = new Parser(this).getAttendance();
+
+            if (!valid)
             {
                 // Do not run matchmaker
                 throw Error;
             }
-            
         }
 
         /**
@@ -27,7 +26,7 @@ namespace Matchmaker
          * to stop the matchmaker from executing (for instance if it is already running).
          * @param show Show or Hide button
          */
-        protected showButton(show: boolean): boolean
+        public showButton(show: boolean): boolean
         {
             const button = document.getElementById("Generate");
 
@@ -41,63 +40,6 @@ namespace Matchmaker
 
             // Continue
             return true;
-        }
-
-        /**
-         * Get Attendance from the textarea.
-         */
-        protected getAttendance(): boolean
-        {
-            const attendance = document.getElementById("Attendance") as HTMLTextAreaElement;
-
-            if (!attendance)
-            {
-                this.error("Element not found");
-                return false;
-            }
-
-            if (attendance.value.length === 0)
-            {
-                this.error("Attendance not supplied. Paste event attendance in the text area.");
-                return false;
-            }
-
-            return this.parseAttendance(attendance.value);
-        }
-
-        /**
-         * Parse attendance into usable map.
-         * @param attendance Attendance from textarea
-         */
-        protected parseAttendance(attendance: string):boolean
-        {
-            const map: String[][] = [];
-
-            // Map attendance
-            const lines = attendance.split("\n");
-            lines.forEach((l) =>
-            {
-                const elems = l.split("\t");
-                map.push(elems);
-            });
-
-            // Store attended people
-            map.forEach((e) =>
-            {
-                // Check map element is not invalid data
-                if (e.length === 3 && e[0] != "Name" && e[1] === "attended")
-                {
-                    this._attendedPlayers.push(e[0]);
-                }
-            });
-
-            return true;
-        }
-
-        protected error(msg: string)
-        {
-            this.showButton(true);
-            alert(msg);
         }
     }
 }
