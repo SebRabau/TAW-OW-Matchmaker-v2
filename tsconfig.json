@@ -8,7 +8,8 @@
             "es2015.promise",
             "es5"
         ],
-        "outFile": "build/app.js",
+        "outDir": "build",
+        //"outFile": "build/app.js",
         "sourceMap": true,
         "rootDir": "src",
         "strict": true,

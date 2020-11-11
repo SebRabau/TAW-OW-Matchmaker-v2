@@ -1,0 +1,16 @@
+{
+  "name": "taw-ow-matchmaker-v2",
+  "version": "1.0.0",
+  "description": "Find out more about The Art of Warfare (TAW) Gaming Community here: [www.taw.net](www.taw.net).",
+  "main": "build/app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SebRabau/TAW-OW-Matchmaker-v2.git"
+  },
+  "author": "Sebastian Rabau, Philipp von Perponcher, Or Benjamin",
+  "dependencies": {
+    "@types/jquery": "^3.5.4",
+    "firebase": "^7.20.0",
+    "firebaseui": "^4.6.1"
+  }
+}

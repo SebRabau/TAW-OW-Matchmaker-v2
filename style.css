@@ -49,6 +49,15 @@ html
     max-height: 300px;
 }
 
+#MissingPlayers
+{
+    display: block;
+    color: red;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
 #Generate
 {
     box-shadow: inset 0px 1px 0px 0px #de9b14;
