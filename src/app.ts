@@ -10,7 +10,7 @@ function loadScripts()
 {
     var directory = 'build/';
     var extension = '.js';
-    var files = ["matchmaker", "parser", "player" ];
+    var files = ["matchmaker", "parser", "player", "team", "bench" ];
     for (var file of files)
     {
         var path = directory + file + extension;

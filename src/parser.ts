@@ -71,13 +71,18 @@ namespace Matchmaker
 
     export class Parser
     {
-        protected _players: Player[] = [];
+        protected _playersMap: Map<string, Player> = new Map();
+        protected _playersToMatchmake: Player[] = [];
         protected _playerInDatabase: string[] = [];
+        protected _attendingPlayers: string[] | boolean = [];
+
+        public get playersToMatchmake() { return this._playersToMatchmake; }
 
         constructor(protected context: Matchmaker) {}
 
         /**
-         * Get Attendance from the textarea.
+         * Get Attendance from the textarea, then process the information against
+         * database player info to get the available players for the day.
          */
         public getAttendance(): boolean
         {
@@ -105,15 +110,15 @@ namespace Matchmaker
                 return false;
             }
 
-            const players = this.parseAttendance(attendance.value);
-            if (!players)
+            this._attendingPlayers = this.parseAttendance(attendance.value);
+            if (!this._attendingPlayers)
             {
                 this.error("Error parsing Attendance");
                 return false;
             }
             else
             {
-                this.listAvailablePlayers(players as string[])
+                this.listAvailablePlayers(this._attendingPlayers as string[])
             }
 
             return true;
@@ -123,10 +128,10 @@ namespace Matchmaker
          * Parse attendance into usable map.
          * @param attendance Attendance from textarea
          */
-        public parseAttendance(attendance: string): String[] | boolean
+        public parseAttendance(attendance: string): string[] | boolean
         {
-            const map: String[][] = [];
-            const players: String[] = [];
+            const map: string[][] = [];
+            const players: string[] = [];
 
             // Map attendance
             const lines = attendance.split("\n");
@@ -149,6 +154,10 @@ namespace Matchmaker
             return players;
         }
 
+        /**
+         * Parse database palyer info, then creates a list of player objects and a complementary
+         * list of callsigns.
+         */
         protected createPlayers()
         {
             if (playerDatabase[0][0] === "Callsign")
@@ -159,11 +168,20 @@ namespace Matchmaker
             playerDatabase.forEach((p) =>
             {
                 const player = this.createPlayer(p[0], p[1], p[2], p[3], p[4], p[5]);
-                this._players.push(player);
+                this._playersMap.set(player.callsign, player);
                 this._playerInDatabase.push(player.callsign);
             })
         }
 
+        /**
+         * Creates a player object from database data.
+         * @param callsign Callsign
+         * @param tankSR Tank SR
+         * @param dpsSR DPS SR
+         * @param supSR Support SR
+         * @param roles Roles player will play
+         * @param prefRole Preffered role
+         */
         protected createPlayer(callsign: string, tankSR: string, dpsSR: string, supSR: string, roles: string, prefRole: string): Player
         {
             let prefRoleObj;
@@ -189,14 +207,18 @@ namespace Matchmaker
                 dps: roles.indexOf("d") > -1,
                 tank: roles.indexOf("t") > -1,
                 sup: roles.indexOf("s") > -1,
-                preffered: prefRoleObj
+                preffered: prefRoleObj,
+                current: Player.Role.NONE
             }
 
-            return new Player(callsign,
-                { tank: Number.parseInt(tankSR), dps: Number.parseInt(dpsSR), sup: Number.parseInt(supSR) },
-                rolesObj)
+            return new Player(callsign, { tank: Number.parseInt(tankSR), dps: Number.parseInt(dpsSR), sup: Number.parseInt(supSR) }, rolesObj);
         }
 
+        /**
+         * Lists players that have shown up to the event and matches them against the players in the
+         * database, listing any missing members separately.
+         * @param players List of players that showed up to the event
+         */
         protected listAvailablePlayers(players: string[])
         {
             const parent = document.getElementById("Attendance") as HTMLTextAreaElement;
@@ -205,6 +227,7 @@ namespace Matchmaker
             {
                 let list = "Available players: \n\n";
 
+                // List of players who've shown up but aren't in spreadsheet
                 let missingPlayerList = "Missing players (check spreadsheet): \n\n";
                 let missingPlayers = [];
 
@@ -218,6 +241,7 @@ namespace Matchmaker
                     else
                     {
                         list += p.toString() + "\n";
+                        this._playersToMatchmake.push(this._playersMap.get(p) as Player);
                     }
                 });
 
@@ -233,6 +257,10 @@ namespace Matchmaker
             }
         }
 
+        /**
+         * Does an error alert and shows the button so you can try again.
+         * @param msg Message
+         */
         protected error(msg: string)
         {
             this.context.showButton(true);

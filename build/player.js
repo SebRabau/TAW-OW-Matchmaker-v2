@@ -3,6 +3,7 @@ var Matchmaker;
 (function (Matchmaker) {
     var Player = /** @class */ (function () {
         function Player(callsign, SR, roles) {
+            this._team = new Matchmaker.Team("NO TEAM");
             this._callsign = callsign;
             this._SR = SR;
             this._roles = roles;
@@ -22,6 +23,12 @@ var Matchmaker;
             enumerable: false,
             configurable: true
         });
+        Object.defineProperty(Player.prototype, "team", {
+            get: function () { return this._team; },
+            set: function (value) { this._team = value; },
+            enumerable: false,
+            configurable: true
+        });
         return Player;
     }());
     Matchmaker.Player = Player;
@@ -35,4 +42,3 @@ var Matchmaker;
         })(Role = Player.Role || (Player.Role = {}));
     })(Player = Matchmaker.Player || (Matchmaker.Player = {}));
 })(Matchmaker || (Matchmaker = {}));
-//# sourceMappingURL=player.js.map

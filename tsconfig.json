@@ -10,7 +10,7 @@
         ],
         "outDir": "build",
         //"outFile": "build/app.js",
-        "sourceMap": true,
+        "sourceMap": false,
         "rootDir": "src",
         "strict": true,
         "esModuleInterop": true,

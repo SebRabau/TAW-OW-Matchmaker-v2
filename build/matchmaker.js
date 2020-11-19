@@ -39,6 +39,15 @@ var Matchmaker;
 (function (Matchmaker_1) {
     var Matchmaker = /** @class */ (function () {
         function Matchmaker() {
+            this._parser = null;
+            this._defaultTeamNames = ['Naughty Tomatoes', 'Strike Team 404', 'Suwon Tigers', 'Lucky Runners', 'Raccoon Ravagers', 'Pesky Pachimaris', 'Team 7', 'Team 8'];
+            this._tankPlayers = [];
+            this._dpsPlayers = [];
+            this._supPlayers = [];
+            this._otherPlayers = [];
+            this._teamCount = 0;
+            this._teams = [];
+            this._bench = new Matchmaker_1.Bench();
         }
         Matchmaker.prototype.run = function () {
             return __awaiter(this, void 0, void 0, function () {
@@ -48,11 +57,18 @@ var Matchmaker;
                         // Do not run matchmaker
                         throw Error("Matchmaker is Already Running");
                     }
-                    valid = new Matchmaker_1.Parser(this).getAttendance();
+                    this._parser = new Matchmaker_1.Parser(this);
+                    valid = this._parser.getAttendance();
                     if (!valid) {
                         // Do not run matchmaker
                         throw Error;
                     }
+                    this.sortPlayerIntoRoles(this._parser.playersToMatchmake);
+                    this._teamCount = Math.floor(this._parser.playersToMatchmake.length / 6);
+                    this.createTeams();
+                    this.randFillTeams();
+                    this.createBench();
+                    this.startLoop();
                     return [2 /*return*/];
                 });
             });
@@ -76,8 +92,174 @@ var Matchmaker;
             // Continue
             return true;
         };
+        Matchmaker.prototype.createTeams = function () {
+            for (var i = 0; i < this._teamCount; i++) {
+                this._teams.push(new Matchmaker_1.Team(this._defaultTeamNames[i]));
+            }
+        };
+        Matchmaker.prototype.createBench = function () {
+            var _this = this;
+            this._tankPlayers.forEach(function (p) { return _this._bench.benchPlayer(p, Matchmaker_1.Player.Role.TANK); });
+            this._dpsPlayers.forEach(function (p) { return _this._bench.benchPlayer(p, Matchmaker_1.Player.Role.DPS); });
+            this._supPlayers.forEach(function (p) { return _this._bench.benchPlayer(p, Matchmaker_1.Player.Role.SUP); });
+        };
+        Matchmaker.prototype.randFillTeams = function () {
+            var _this = this;
+            this._tankPlayers = this.shufflePlayers(this._tankPlayers);
+            this._dpsPlayers = this.shufflePlayers(this._dpsPlayers);
+            this._supPlayers = this.shufflePlayers(this._supPlayers);
+            this._teams.forEach(function (t, i) {
+                for (var j = 0; j < 2; j++) {
+                    if (_this._tankPlayers.length > 0) {
+                        t.assignPlayer(_this._tankPlayers.pop(), Matchmaker_1.Player.Role.TANK);
+                    }
+                    if (_this._dpsPlayers.length > 0) {
+                        t.assignPlayer(_this._dpsPlayers.pop(), Matchmaker_1.Player.Role.DPS);
+                    }
+                    if (_this._supPlayers.length > 0) {
+                        t.assignPlayer(_this._supPlayers.pop(), Matchmaker_1.Player.Role.SUP);
+                    }
+                }
+            });
+        };
+        Matchmaker.prototype.sortPlayerIntoRoles = function (players) {
+            var _this = this;
+            this._tankPlayers = [];
+            this._dpsPlayers = [];
+            this._supPlayers = [];
+            players.forEach(function (p) {
+                if (p.roles.preffered === Matchmaker_1.Player.Role.TANK) {
+                    _this._tankPlayers.push(p);
+                }
+                else if (p.roles.preffered === Matchmaker_1.Player.Role.DPS) {
+                    _this._dpsPlayers.push(p);
+                }
+                else if (p.roles.preffered === Matchmaker_1.Player.Role.SUP) {
+                    _this._supPlayers.push(p);
+                }
+                else {
+                    _this._otherPlayers.push(p);
+                    _this._bench.benchPlayer(p, Matchmaker_1.Player.Role.NONE);
+                }
+            });
+        };
+        Matchmaker.prototype.startLoop = function () {
+            var totalID = "";
+            this._teams.forEach(function (t) { return totalID += t.getID(); });
+            var oldID = "";
+            var counter = 0;
+            while (oldID != totalID && counter < 20) {
+                this.fillBlanks();
+                //this.balance();
+                oldID = totalID;
+                totalID = "";
+                this._teams.forEach(function (t) { return totalID += t.getID(); });
+                counter++;
+            }
+        };
+        Matchmaker.prototype.fillBlanks = function () {
+            var _this = this;
+            var count = 1;
+            // Fill as many blanks on team as possible with bench players
+            while (count != 0) {
+                count = 0;
+                this._teams.forEach(function (t) {
+                    var gaps = t.getGaps();
+                    if (gaps.length === 0) {
+                        console.log("No Gaps in team: " + t.getID());
+                    }
+                    else {
+                        count += gaps.length;
+                    }
+                    gaps.forEach(function (r) {
+                        if (r === Matchmaker_1.Player.Role.TANK) {
+                            if (_this._bench.tankPlayers.length > 0) {
+                                var p = _this._bench.tankPlayers.pop();
+                                t.assignPlayer(p, Matchmaker_1.Player.Role.TANK);
+                                _this._bench.unbench(p);
+                                count--;
+                            }
+                        }
+                        else if (r === Matchmaker_1.Player.Role.DPS) {
+                            if (_this._bench.dpsPlayers.length > 0) {
+                                var p = _this._bench.dpsPlayers.pop();
+                                t.assignPlayer(p, Matchmaker_1.Player.Role.DPS);
+                                _this._bench.unbench(p);
+                                count--;
+                            }
+                        }
+                        else if (r === Matchmaker_1.Player.Role.SUP) {
+                            if (_this._bench.supPlayers.length > 0) {
+                                var p = _this._bench.supPlayers.pop();
+                                t.assignPlayer(p, Matchmaker_1.Player.Role.SUP);
+                                _this._bench.unbench(p);
+                                count--;
+                            }
+                        }
+                    });
+                });
+                if (count === 0) {
+                    return;
+                }
+                // Slot in bench players that play gap roles
+                this._teams.forEach(function (t) {
+                    var gaps = t.getGaps();
+                    gaps.forEach(function (r) {
+                        _this._bench.refreshRemainingPlayers();
+                        _this._bench.remainingPlayers.forEach(function (p) {
+                            if (r === Matchmaker_1.Player.Role.TANK && p.roles.tank) {
+                                t.assignPlayer(p, Matchmaker_1.Player.Role.TANK);
+                                _this._bench.unbench(p);
+                                count--;
+                            }
+                            else if (r === Matchmaker_1.Player.Role.DPS && p.roles.dps) {
+                                t.assignPlayer(p, Matchmaker_1.Player.Role.DPS);
+                                _this._bench.unbench(p);
+                                count--;
+                            }
+                            else if (r === Matchmaker_1.Player.Role.SUP && p.roles.sup) {
+                                t.assignPlayer(p, Matchmaker_1.Player.Role.SUP);
+                                _this._bench.unbench(p);
+                                count--;
+                            }
+                        });
+                    });
+                });
+                if (count === 0) {
+                    return;
+                }
+                // Try to swap people already in team to cover roles
+                this._teams.forEach(function (t) {
+                    var gaps = t.getGaps();
+                    gaps.forEach(function (r) {
+                        t.allPlayers.forEach(function (p) {
+                            if (r === Matchmaker_1.Player.Role.TANK && p.roles.tank && p.roles.current != Matchmaker_1.Player.Role.TANK) {
+                                t.swapPlayer(p, p.roles.current, Matchmaker_1.Player.Role.TANK);
+                                count--;
+                            }
+                            else if (r === Matchmaker_1.Player.Role.DPS && p.roles.dps && p.roles.current != Matchmaker_1.Player.Role.DPS) {
+                                t.swapPlayer(p, p.roles.current, Matchmaker_1.Player.Role.DPS);
+                                count--;
+                            }
+                            else if (r === Matchmaker_1.Player.Role.SUP && p.roles.sup && p.roles.current != Matchmaker_1.Player.Role.SUP) {
+                                t.swapPlayer(p, p.roles.current, Matchmaker_1.Player.Role.SUP);
+                                count--;
+                            }
+                        });
+                    });
+                });
+                this._teams;
+            }
+        };
+        Matchmaker.prototype.shufflePlayers = function (array) {
+            var _a;
+            for (var i = array.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                _a = [array[j], array[i]], array[i] = _a[0], array[j] = _a[1];
+            }
+            return array;
+        };
         return Matchmaker;
     }());
     Matchmaker_1.Matchmaker = Matchmaker;
 })(Matchmaker || (Matchmaker = {}));
-//# sourceMappingURL=matchmaker.js.map

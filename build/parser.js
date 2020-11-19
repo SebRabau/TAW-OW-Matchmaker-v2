@@ -53,11 +53,19 @@ var Matchmaker;
     var Parser = /** @class */ (function () {
         function Parser(context) {
             this.context = context;
-            this._players = [];
+            this._playersMap = new Map();
+            this._playersToMatchmake = [];
             this._playerInDatabase = [];
+            this._attendingPlayers = [];
         }
+        Object.defineProperty(Parser.prototype, "playersToMatchmake", {
+            get: function () { return this._playersToMatchmake; },
+            enumerable: false,
+            configurable: true
+        });
         /**
-         * Get Attendance from the textarea.
+         * Get Attendance from the textarea, then process the information against
+         * database player info to get the available players for the day.
          */
         Parser.prototype.getAttendance = function () {
             var attendance = document.getElementById("Attendance");
@@ -76,13 +84,13 @@ var Matchmaker;
                 this.error("Error getting data from spreadsheet.");
                 return false;
             }
-            var players = this.parseAttendance(attendance.value);
-            if (!players) {
+            this._attendingPlayers = this.parseAttendance(attendance.value);
+            if (!this._attendingPlayers) {
                 this.error("Error parsing Attendance");
                 return false;
             }
             else {
-                this.listAvailablePlayers(players);
+                this.listAvailablePlayers(this._attendingPlayers);
             }
             return true;
         };
@@ -108,6 +116,10 @@ var Matchmaker;
             });
             return players;
         };
+        /**
+         * Parse database palyer info, then creates a list of player objects and a complementary
+         * list of callsigns.
+         */
         Parser.prototype.createPlayers = function () {
             var _this = this;
             if (playerDatabase[0][0] === "Callsign") {
@@ -115,10 +127,19 @@ var Matchmaker;
             }
             playerDatabase.forEach(function (p) {
                 var player = _this.createPlayer(p[0], p[1], p[2], p[3], p[4], p[5]);
-                _this._players.push(player);
+                _this._playersMap.set(player.callsign, player);
                 _this._playerInDatabase.push(player.callsign);
             });
         };
+        /**
+         * Creates a player object from database data.
+         * @param callsign Callsign
+         * @param tankSR Tank SR
+         * @param dpsSR DPS SR
+         * @param supSR Support SR
+         * @param roles Roles player will play
+         * @param prefRole Preffered role
+         */
         Parser.prototype.createPlayer = function (callsign, tankSR, dpsSR, supSR, roles, prefRole) {
             var prefRoleObj;
             switch (prefRole) {
@@ -139,16 +160,23 @@ var Matchmaker;
                 dps: roles.indexOf("d") > -1,
                 tank: roles.indexOf("t") > -1,
                 sup: roles.indexOf("s") > -1,
-                preffered: prefRoleObj
+                preffered: prefRoleObj,
+                current: Matchmaker.Player.Role.NONE
             };
             return new Matchmaker.Player(callsign, { tank: Number.parseInt(tankSR), dps: Number.parseInt(dpsSR), sup: Number.parseInt(supSR) }, rolesObj);
         };
+        /**
+         * Lists players that have shown up to the event and matches them against the players in the
+         * database, listing any missing members separately.
+         * @param players List of players that showed up to the event
+         */
         Parser.prototype.listAvailablePlayers = function (players) {
             var _this = this;
             var parent = document.getElementById("Attendance");
             var missing = document.getElementById("MissingPlayers");
             if (parent && missing) {
                 var list_1 = "Available players: \n\n";
+                // List of players who've shown up but aren't in spreadsheet
                 var missingPlayerList_1 = "Missing players (check spreadsheet): \n\n";
                 var missingPlayers_1 = [];
                 players.forEach(function (p) {
@@ -158,6 +186,7 @@ var Matchmaker;
                     }
                     else {
                         list_1 += p.toString() + "\n";
+                        _this._playersToMatchmake.push(_this._playersMap.get(p));
                     }
                 });
                 // remove last \n
@@ -169,6 +198,10 @@ var Matchmaker;
                 missing.innerText = missingPlayers_1.length > 0 ? missingPlayerList_1 : "";
             }
         };
+        /**
+         * Does an error alert and shows the button so you can try again.
+         * @param msg Message
+         */
         Parser.prototype.error = function (msg) {
             this.context.showButton(true);
             alert(msg);
@@ -177,4 +210,3 @@ var Matchmaker;
     }());
     Matchmaker.Parser = Parser;
 })(Matchmaker || (Matchmaker = {}));
-//# sourceMappingURL=parser.js.map
