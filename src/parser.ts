@@ -63,7 +63,6 @@ namespace Matchmaker
     // Do what ever you please with the final array
     function handleResults(spreadsheetArray: any)
     {
-        console.log(spreadsheetArray);
         playerDatabase = spreadsheetArray;
     }
 

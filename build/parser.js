@@ -46,7 +46,6 @@ var Matchmaker;
     }
     // Do what ever you please with the final array
     function handleResults(spreadsheetArray) {
-        console.log(spreadsheetArray);
         playerDatabase = spreadsheetArray;
     }
     var playerDatabase = [];

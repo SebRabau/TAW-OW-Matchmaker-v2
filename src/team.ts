@@ -12,6 +12,7 @@ namespace Matchmaker
         public get dpsPlayers() { return this._dpsPlayers; }
         public get supPlayers() { return this._supPlayers; }
         public get allPlayers() { return this._allPlayers; }
+        public get name() { return this._name; }
 
         constructor(name: string)
         {
@@ -28,18 +29,19 @@ namespace Matchmaker
         public getGaps(): Player.Role[]
         {
             const gaps = [];
-            if (this._tankPlayers.length === 0) { gaps.push(Player.Role.TANK) }
-            if (this._dpsPlayers.length === 0) { gaps.push(Player.Role.DPS) }
-            if (this._supPlayers.length === 0) { gaps.push(Player.Role.SUP) }
+            if (this._tankPlayers.length === 0) { gaps.push(Player.Role.TANK); gaps.push(Player.Role.TANK); }
+            if (this._dpsPlayers.length === 0) { gaps.push(Player.Role.DPS); gaps.push(Player.Role.DPS); }
+            if (this._supPlayers.length === 0) { gaps.push(Player.Role.SUP); gaps.push(Player.Role.SUP); }
 
-            if (this._tankPlayers.length === 1) { gaps.push(Player.Role.TANK) }
-            if (this._dpsPlayers.length === 1) { gaps.push(Player.Role.DPS) }
-            if (this._supPlayers.length === 1) { gaps.push(Player.Role.SUP) }
+            if (this._tankPlayers.length === 1) { gaps.push(Player.Role.TANK); }
+            if (this._dpsPlayers.length === 1) { gaps.push(Player.Role.DPS); }
+            if (this._supPlayers.length === 1) { gaps.push(Player.Role.SUP); }
             return gaps;
         }
 
         public assignPlayer(player: Player, role: Player.Role)
         {
+            player.team = this;
             switch(role)
             {
                 case Player.Role.TANK:
@@ -65,13 +67,13 @@ namespace Matchmaker
             switch(oldRole)
             {
                 case Player.Role.TANK:
-                    this._tankPlayers = this._tankPlayers.splice(this._tankPlayers.indexOf(player), 0);
+                    this._tankPlayers.splice(this._tankPlayers.indexOf(player), 1);
                     break;
                 case Player.Role.DPS:
-                    this._tankPlayers = this._dpsPlayers.splice(this._dpsPlayers.indexOf(player), 0);
+                    this._dpsPlayers.splice(this._dpsPlayers.indexOf(player), 1);
                     break;
                 case Player.Role.SUP:
-                    this._tankPlayers = this._supPlayers.splice(this._supPlayers.indexOf(player), 0);
+                    this._supPlayers.splice(this._supPlayers.indexOf(player), 1);
                     break;
             }
 

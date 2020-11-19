@@ -156,24 +156,31 @@ namespace Matchmaker
         protected fillBlanks()
         {
             let count = 1;
+            let loopCount = 0;
+
+            this._teams.forEach((t) =>
+            {
+                let gaps = t.getGaps();
+                if (gaps.length === 0)
+                {
+                    console.log("No Gaps in team: "+t.name);
+                }
+            });
 
             // Fill as many blanks on team as possible with bench players
-            while (count != 0)
+            while (count != 0 && loopCount < 10)
             {
+                loopCount++;
                 count = 0;
                 this._teams.forEach((t) =>
                 {
                     let gaps = t.getGaps();
-                    if (gaps.length === 0)
-                    {
-                        console.log("No Gaps in team: "+t.getID());
-                    }
-                    else
+                    if (gaps.length > 0)
                     {
                         count += gaps.length;
                     }
 
-                    gaps.forEach((r) =>
+                    gaps.forEach((r, i) =>
                     {
                         if (r === Player.Role.TANK)
                         {
@@ -181,7 +188,7 @@ namespace Matchmaker
                             {
                                 const p = this._bench.tankPlayers.pop() as Player;
                                 t.assignPlayer(p, Player.Role.TANK);
-                                this._bench.unbench(p)
+                                this._bench.unbench(p);
                                 count--;
                             }
                         }
@@ -254,17 +261,14 @@ namespace Matchmaker
                             if (r === Player.Role.TANK && p.roles.tank && p.roles.current != Player.Role.TANK)
                             {
                                 t.swapPlayer(p, p.roles.current, Player.Role.TANK);
-                                count--;
                             }
                             else if (r === Player.Role.DPS && p.roles.dps && p.roles.current != Player.Role.DPS)
                             {
                                 t.swapPlayer(p, p.roles.current, Player.Role.DPS);
-                                count--;
                             }
                             else if (r === Player.Role.SUP && p.roles.sup && p.roles.current != Player.Role.SUP)
                             {
                                 t.swapPlayer(p, p.roles.current, Player.Role.SUP);
-                                count--;
                             }
                         });
                     });

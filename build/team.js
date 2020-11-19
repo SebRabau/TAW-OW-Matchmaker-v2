@@ -29,6 +29,11 @@ var Matchmaker;
             enumerable: false,
             configurable: true
         });
+        Object.defineProperty(Team.prototype, "name", {
+            get: function () { return this._name; },
+            enumerable: false,
+            configurable: true
+        });
         Team.prototype.getID = function () {
             var ID = "" + this._name;
             this._allPlayers.forEach(function (p) { return ID += p.callsign; });
@@ -38,11 +43,14 @@ var Matchmaker;
             var gaps = [];
             if (this._tankPlayers.length === 0) {
                 gaps.push(Matchmaker.Player.Role.TANK);
+                gaps.push(Matchmaker.Player.Role.TANK);
             }
             if (this._dpsPlayers.length === 0) {
                 gaps.push(Matchmaker.Player.Role.DPS);
+                gaps.push(Matchmaker.Player.Role.DPS);
             }
             if (this._supPlayers.length === 0) {
+                gaps.push(Matchmaker.Player.Role.SUP);
                 gaps.push(Matchmaker.Player.Role.SUP);
             }
             if (this._tankPlayers.length === 1) {
@@ -57,6 +65,7 @@ var Matchmaker;
             return gaps;
         };
         Team.prototype.assignPlayer = function (player, role) {
+            player.team = this;
             switch (role) {
                 case Matchmaker.Player.Role.TANK:
                     player.roles.current = Matchmaker.Player.Role.TANK;
@@ -78,13 +87,13 @@ var Matchmaker;
         Team.prototype.swapPlayer = function (player, oldRole, newRole) {
             switch (oldRole) {
                 case Matchmaker.Player.Role.TANK:
-                    this._tankPlayers = this._tankPlayers.splice(this._tankPlayers.indexOf(player), 0);
+                    this._tankPlayers.splice(this._tankPlayers.indexOf(player), 1);
                     break;
                 case Matchmaker.Player.Role.DPS:
-                    this._tankPlayers = this._dpsPlayers.splice(this._dpsPlayers.indexOf(player), 0);
+                    this._dpsPlayers.splice(this._dpsPlayers.indexOf(player), 1);
                     break;
                 case Matchmaker.Player.Role.SUP:
-                    this._tankPlayers = this._supPlayers.splice(this._supPlayers.indexOf(player), 0);
+                    this._supPlayers.splice(this._supPlayers.indexOf(player), 1);
                     break;
             }
             switch (newRole) {

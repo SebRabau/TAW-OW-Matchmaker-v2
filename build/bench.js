@@ -27,16 +27,16 @@ var Matchmaker;
         };
         Bench.prototype.unbench = function (player) {
             if (this.tankPlayers.indexOf(player) > -1) {
-                this.tankPlayers = this.tankPlayers.splice(this.tankPlayers.indexOf(player), 0);
+                this.tankPlayers.splice(this.tankPlayers.indexOf(player), 1);
             }
             if (this.dpsPlayers.indexOf(player) > -1) {
-                this.dpsPlayers = this.dpsPlayers.splice(this.dpsPlayers.indexOf(player), 0);
+                this.dpsPlayers.splice(this.dpsPlayers.indexOf(player), 1);
             }
             if (this.supPlayers.indexOf(player) > -1) {
-                this.supPlayers = this.supPlayers.splice(this.supPlayers.indexOf(player), 0);
+                this.supPlayers.splice(this.supPlayers.indexOf(player), 1);
             }
             if (this.otherPlayers.indexOf(player) > -1) {
-                this.otherPlayers = this.otherPlayers.splice(this.otherPlayers.indexOf(player), 0);
+                this.otherPlayers.splice(this.otherPlayers.indexOf(player), 1);
             }
         };
         Bench.prototype.refreshRemainingPlayers = function () {
