@@ -21,6 +21,36 @@ namespace Matchmaker
             this._SR = SR;
             this._roles = roles;
         }
+
+        public canPlay(role: Player.Role): boolean
+        {
+            switch (role)
+            {
+                case Player.Role.TANK:
+                    return this._roles.tank;
+                case Player.Role.DPS:
+                    return this._roles.dps;
+                case Player.Role.SUP:
+                    return this._roles.sup;
+                default:
+                    return false;
+            }
+        }
+
+        public getSR(role: Player.Role): number
+        {
+            switch (role)
+            {
+                case Player.Role.TANK:
+                    return this._SR.tank;
+                case Player.Role.DPS:
+                    return this._SR.dps;
+                case Player.Role.SUP:
+                    return this._SR.sup;
+                default:
+                    return 0;
+            }
+        }
     }
 
     export namespace Player

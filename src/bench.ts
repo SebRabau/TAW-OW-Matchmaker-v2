@@ -6,7 +6,14 @@ namespace Matchmaker
         public dpsPlayers: Player[] = [];
         public supPlayers: Player[] = [];
         public otherPlayers: Player[] = [];
-        public remainingPlayers: Player[] = [];
+
+        protected _remainingPlayers: Player[] = [];
+
+        public get remainingPlayers()
+        {
+            this.refreshRemainingPlayers();
+            return this._remainingPlayers;
+        }
 
         constructor() {}
 
@@ -49,10 +56,10 @@ namespace Matchmaker
             }
         }
 
-        public refreshRemainingPlayers()
+        protected refreshRemainingPlayers()
         {
-            this.remainingPlayers = [];
-            this.remainingPlayers = this.remainingPlayers.concat(
+            this._remainingPlayers = [];
+            this._remainingPlayers = this._remainingPlayers.concat(
                 this.dpsPlayers,
                 this.tankPlayers,
                 this.supPlayers,

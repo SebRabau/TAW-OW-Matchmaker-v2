@@ -64,6 +64,25 @@ var Matchmaker;
             }
             return gaps;
         };
+        Team.prototype.getAverage = function () {
+            var avg = 0;
+            this._tankPlayers.forEach(function (p) { return avg += p.SR.tank; });
+            this._dpsPlayers.forEach(function (p) { return avg += p.SR.dps; });
+            this._supPlayers.forEach(function (p) { return avg += p.SR.sup; });
+            return avg / this._allPlayers.length;
+        };
+        Team.prototype.getPlayers = function (role) {
+            switch (role) {
+                case Matchmaker.Player.Role.TANK:
+                    return this._tankPlayers;
+                case Matchmaker.Player.Role.DPS:
+                    return this._dpsPlayers;
+                case Matchmaker.Player.Role.SUP:
+                    return this._supPlayers;
+                default:
+                    return [];
+            }
+        };
         Team.prototype.assignPlayer = function (player, role) {
             player.team = this;
             switch (role) {

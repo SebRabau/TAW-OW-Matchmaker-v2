@@ -7,8 +7,16 @@ var Matchmaker;
             this.dpsPlayers = [];
             this.supPlayers = [];
             this.otherPlayers = [];
-            this.remainingPlayers = [];
+            this._remainingPlayers = [];
         }
+        Object.defineProperty(Bench.prototype, "remainingPlayers", {
+            get: function () {
+                this.refreshRemainingPlayers();
+                return this._remainingPlayers;
+            },
+            enumerable: false,
+            configurable: true
+        });
         Bench.prototype.benchPlayer = function (player, role) {
             switch (role) {
                 case Matchmaker.Player.Role.TANK:
@@ -40,8 +48,8 @@ var Matchmaker;
             }
         };
         Bench.prototype.refreshRemainingPlayers = function () {
-            this.remainingPlayers = [];
-            this.remainingPlayers = this.remainingPlayers.concat(this.dpsPlayers, this.tankPlayers, this.supPlayers, this.otherPlayers);
+            this._remainingPlayers = [];
+            this._remainingPlayers = this._remainingPlayers.concat(this.dpsPlayers, this.tankPlayers, this.supPlayers, this.otherPlayers);
         };
         return Bench;
     }());

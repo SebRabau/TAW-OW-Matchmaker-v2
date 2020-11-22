@@ -12,6 +12,7 @@ namespace Matchmaker
 
         protected _teamCount: number = 0;
         protected _teams: Team[] = [];
+        protected _unevenTeam: Team | null = null;
 
         protected _bench: Bench = new Bench();
 
@@ -70,6 +71,12 @@ namespace Matchmaker
             for (let i = 0; i < this._teamCount; i++)
             {
                 this._teams.push(new Team(this._defaultTeamNames[i]));
+            }
+
+            // If we have uneven teams, we will make a final team from the bench later
+            if (this._teams.length % 2 === 1)
+            {
+                this._unevenTeam = this._teams.pop() as Team;
             }
         }
 
@@ -144,18 +151,21 @@ namespace Matchmaker
             while (oldID != totalID && counter < 20)
             {
                 this.fillBlanks();
-                //this.balance();
+                this.balance();
 
                 oldID = totalID;
                 totalID = "";
                 this._teams.forEach((t) => totalID += t.getID());
                 counter++;
             }
+
+            this._teams;
         }
 
         protected fillBlanks()
         {
             let count = 1;
+            let fullCount = 0;
             let loopCount = 0;
 
             this._teams.forEach((t) =>
@@ -164,8 +174,11 @@ namespace Matchmaker
                 if (gaps.length === 0)
                 {
                     console.log("No Gaps in team: "+t.name);
+                    fullCount++;
                 }
             });
+
+            if (fullCount === this._teams.length) { return; }
 
             // Fill as many blanks on team as possible with bench players
             while (count != 0 && loopCount < 10)
@@ -223,7 +236,6 @@ namespace Matchmaker
                     let gaps = t.getGaps();
                     gaps.forEach((r) =>
                     {
-                        this._bench.refreshRemainingPlayers();
                         this._bench.remainingPlayers.forEach((p) =>
                         {
                             if (r === Player.Role.TANK && p.roles.tank)
@@ -275,6 +287,121 @@ namespace Matchmaker
                 });
 
                 this._teams;
+            }
+        }
+
+        protected balance()
+        {
+            for (let i = 0; i < this._teams.length / 2; i+=2)
+            {
+                if (this._teams[i] && this._teams[i+1])
+                {
+                    this.doBalance(this._teams[i], this._teams[i+1]);
+                }
+            }
+        }
+
+        protected doBalance(team1: Team, team2: Team)
+        {
+            let avg1 = team1.getAverage();
+            let avg2 = team2.getAverage();
+            const startDiff = Math.abs(Math.round(avg1 - avg2));
+
+            let switchesPossible = true;
+            const allSwitches: string[] = [];
+
+            const roleMap: Player.Role[] = [ Player.Role.TANK, Player.Role.DPS, Player.Role.SUP ];
+            const switchMap = new Map<number, Switcher | BenchSwitcher>();
+
+            let count = 0;
+
+            while (switchesPossible && count < 20)
+            {
+                count++;
+                avg1 = team1.getAverage();
+                avg2 = team2.getAverage();
+                const runningDiff = Math.abs(Math.round(avg1 - avg2));
+
+                roleMap.forEach((role1) =>
+                {
+                    roleMap.forEach((role2) =>
+                    {
+                        const players1 = team1.getPlayers(role1);
+                        const players2 = team2.getPlayers(role2);
+
+                        players1.forEach((p1) =>
+                        {
+                            players2.forEach((p2) =>
+                            {
+                                const switcher = new Switcher(team1, role1, p1, team2, role2, p2);
+
+                                const change = switcher.SRChange;
+                                const key = Math.abs(runningDiff - change);
+
+                                if (Math.abs(key) <= Math.abs(runningDiff) && change != 0 && switcher.switchPossible && allSwitches.indexOf(switcher.getID()) === -1)
+                                {
+                                    switchMap.set(key, switcher);
+                                }
+                            });
+                        });
+                    });
+                });
+
+                // Try switches with the bench
+                roleMap.forEach((role) =>
+                {
+                    const players1 = team1.getPlayers(role);
+                    const players2 = team2.getPlayers(role);
+                    const playersBench = this._bench.remainingPlayers;
+
+                    players1.forEach((p1) =>
+                    {
+                        playersBench.forEach((pb) =>
+                        {
+                            const switcher = new BenchSwitcher(team1, role, p1, this._bench, pb);
+
+                            const change = switcher.SRChange;
+                            const key = Math.abs(runningDiff + change);
+
+                            if (Math.abs(key) <= Math.abs(runningDiff) && change != 0 && switcher.switchPossible && allSwitches.indexOf(switcher.getID()) === -1)
+                            {
+                                switchMap.set(key, switcher);
+                            }
+                        });
+                    });
+
+                    players2.forEach((p2) =>
+                    {
+                        playersBench.forEach((pb) =>
+                        {
+                            const switcher = new BenchSwitcher(team1, role, p2, this._bench, pb);
+
+                            const change = switcher.SRChange;
+                            const key = Math.abs(runningDiff + change);
+
+                            if (Math.abs(key) <= Math.abs(runningDiff) && change != 0 && switcher.switchPossible && allSwitches.indexOf(switcher.getID()) === -1)
+                            {
+                                switchMap.set(key, switcher);
+                            }
+                        });
+                    });
+                });
+
+                const switches: number[] = Array.from(switchMap.keys());
+                if (switches.length === 0)
+                {
+                    switchesPossible = false;
+                    break;
+                }
+
+                switches.sort((a, b) => b - a);
+
+                const bestSwitch = switchMap.get(switches.shift() as number);
+                if (bestSwitch instanceof Switcher || bestSwitch instanceof BenchSwitcher)
+                {
+                    const success = bestSwitch.makeSwitch();
+                    allSwitches.push(bestSwitch.getID());
+                }
             }
         }
 

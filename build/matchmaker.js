@@ -47,6 +47,7 @@ var Matchmaker;
             this._otherPlayers = [];
             this._teamCount = 0;
             this._teams = [];
+            this._unevenTeam = null;
             this._bench = new Matchmaker_1.Bench();
         }
         Matchmaker.prototype.run = function () {
@@ -95,6 +96,10 @@ var Matchmaker;
         Matchmaker.prototype.createTeams = function () {
             for (var i = 0; i < this._teamCount; i++) {
                 this._teams.push(new Matchmaker_1.Team(this._defaultTeamNames[i]));
+            }
+            // If we have uneven teams, we will make a final team from the bench later
+            if (this._teams.length % 2 === 1) {
+                this._unevenTeam = this._teams.pop();
             }
         };
         Matchmaker.prototype.createBench = function () {
@@ -150,23 +155,29 @@ var Matchmaker;
             var counter = 0;
             while (oldID != totalID && counter < 20) {
                 this.fillBlanks();
-                //this.balance();
+                this.balance();
                 oldID = totalID;
                 totalID = "";
                 this._teams.forEach(function (t) { return totalID += t.getID(); });
                 counter++;
             }
+            this._teams;
         };
         Matchmaker.prototype.fillBlanks = function () {
             var _this = this;
             var count = 1;
+            var fullCount = 0;
             var loopCount = 0;
             this._teams.forEach(function (t) {
                 var gaps = t.getGaps();
                 if (gaps.length === 0) {
                     console.log("No Gaps in team: " + t.name);
+                    fullCount++;
                 }
             });
+            if (fullCount === this._teams.length) {
+                return;
+            }
             // Fill as many blanks on team as possible with bench players
             while (count != 0 && loopCount < 10) {
                 loopCount++;
@@ -210,7 +221,6 @@ var Matchmaker;
                 this._teams.forEach(function (t) {
                     var gaps = t.getGaps();
                     gaps.forEach(function (r) {
-                        _this._bench.refreshRemainingPlayers();
                         _this._bench.remainingPlayers.forEach(function (p) {
                             if (r === Matchmaker_1.Player.Role.TANK && p.roles.tank) {
                                 t.assignPlayer(p, Matchmaker_1.Player.Role.TANK);
@@ -251,6 +261,88 @@ var Matchmaker;
                     });
                 });
                 this._teams;
+            }
+        };
+        Matchmaker.prototype.balance = function () {
+            for (var i = 0; i < this._teams.length / 2; i += 2) {
+                if (this._teams[i] && this._teams[i + 1]) {
+                    this.doBalance(this._teams[i], this._teams[i + 1]);
+                }
+            }
+        };
+        Matchmaker.prototype.doBalance = function (team1, team2) {
+            var _this = this;
+            var avg1 = team1.getAverage();
+            var avg2 = team2.getAverage();
+            var startDiff = Math.abs(Math.round(avg1 - avg2));
+            var switchesPossible = true;
+            var allSwitches = [];
+            var roleMap = [Matchmaker_1.Player.Role.TANK, Matchmaker_1.Player.Role.DPS, Matchmaker_1.Player.Role.SUP];
+            var switchMap = new Map();
+            var count = 0;
+            var _loop_1 = function () {
+                count++;
+                avg1 = team1.getAverage();
+                avg2 = team2.getAverage();
+                var runningDiff = Math.abs(Math.round(avg1 - avg2));
+                roleMap.forEach(function (role1) {
+                    roleMap.forEach(function (role2) {
+                        var players1 = team1.getPlayers(role1);
+                        var players2 = team2.getPlayers(role2);
+                        players1.forEach(function (p1) {
+                            players2.forEach(function (p2) {
+                                var switcher = new Matchmaker_1.Switcher(team1, role1, p1, team2, role2, p2);
+                                var change = switcher.SRChange;
+                                var key = Math.abs(runningDiff - change);
+                                if (Math.abs(key) <= Math.abs(runningDiff) && change != 0 && switcher.switchPossible && allSwitches.indexOf(switcher.getID()) === -1) {
+                                    switchMap.set(key, switcher);
+                                }
+                            });
+                        });
+                    });
+                });
+                // Try switches with the bench
+                roleMap.forEach(function (role) {
+                    var players1 = team1.getPlayers(role);
+                    var players2 = team2.getPlayers(role);
+                    var playersBench = _this._bench.remainingPlayers;
+                    players1.forEach(function (p1) {
+                        playersBench.forEach(function (pb) {
+                            var switcher = new Matchmaker_1.BenchSwitcher(team1, role, p1, _this._bench, pb);
+                            var change = switcher.SRChange;
+                            var key = Math.abs(runningDiff + change);
+                            if (Math.abs(key) <= Math.abs(runningDiff) && change != 0 && switcher.switchPossible && allSwitches.indexOf(switcher.getID()) === -1) {
+                                switchMap.set(key, switcher);
+                            }
+                        });
+                    });
+                    players2.forEach(function (p2) {
+                        playersBench.forEach(function (pb) {
+                            var switcher = new Matchmaker_1.BenchSwitcher(team1, role, p2, _this._bench, pb);
+                            var change = switcher.SRChange;
+                            var key = Math.abs(runningDiff + change);
+                            if (Math.abs(key) <= Math.abs(runningDiff) && change != 0 && switcher.switchPossible && allSwitches.indexOf(switcher.getID()) === -1) {
+                                switchMap.set(key, switcher);
+                            }
+                        });
+                    });
+                });
+                var switches = Array.from(switchMap.keys());
+                if (switches.length === 0) {
+                    switchesPossible = false;
+                    return "break";
+                }
+                switches.sort(function (a, b) { return b - a; });
+                var bestSwitch = switchMap.get(switches.shift());
+                if (bestSwitch instanceof Matchmaker_1.Switcher || bestSwitch instanceof Matchmaker_1.BenchSwitcher) {
+                    var success = bestSwitch.makeSwitch();
+                    allSwitches.push(bestSwitch.getID());
+                }
+            };
+            while (switchesPossible && count < 20) {
+                var state_1 = _loop_1();
+                if (state_1 === "break")
+                    break;
             }
         };
         Matchmaker.prototype.shufflePlayers = function (array) {

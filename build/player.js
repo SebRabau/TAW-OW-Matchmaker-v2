@@ -29,6 +29,30 @@ var Matchmaker;
             enumerable: false,
             configurable: true
         });
+        Player.prototype.canPlay = function (role) {
+            switch (role) {
+                case Player.Role.TANK:
+                    return this._roles.tank;
+                case Player.Role.DPS:
+                    return this._roles.dps;
+                case Player.Role.SUP:
+                    return this._roles.sup;
+                default:
+                    return false;
+            }
+        };
+        Player.prototype.getSR = function (role) {
+            switch (role) {
+                case Player.Role.TANK:
+                    return this._SR.tank;
+                case Player.Role.DPS:
+                    return this._SR.dps;
+                case Player.Role.SUP:
+                    return this._SR.sup;
+                default:
+                    return 0;
+            }
+        };
         return Player;
     }());
     Matchmaker.Player = Player;

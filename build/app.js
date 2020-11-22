@@ -7,7 +7,7 @@ function start() {
 function loadScripts() {
     var directory = 'build/';
     var extension = '.js';
-    var files = ["matchmaker", "parser", "player", "team", "bench"];
+    var files = ["matchmaker", "parser", "player", "team", "bench", "switcher", "benchSwitcher"];
     for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
         var file = files_1[_i];
         var path = directory + file + extension;

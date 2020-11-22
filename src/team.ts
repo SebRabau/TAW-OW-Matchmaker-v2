@@ -39,6 +39,30 @@ namespace Matchmaker
             return gaps;
         }
 
+        public getAverage(): number
+        {
+            let avg = 0;
+            this._tankPlayers.forEach((p) => avg += p.SR.tank);
+            this._dpsPlayers.forEach((p) => avg += p.SR.dps);
+            this._supPlayers.forEach((p) => avg += p.SR.sup);
+            return avg / this._allPlayers.length;
+        }
+
+        public getPlayers(role: Player.Role): Player[]
+        {
+            switch (role)
+            {
+                case Player.Role.TANK:
+                    return this._tankPlayers;
+                case Player.Role.DPS:
+                    return this._dpsPlayers;
+                case Player.Role.SUP:
+                    return this._supPlayers;
+                default:
+                    return [];
+            }
+        }
+
         public assignPlayer(player: Player, role: Player.Role)
         {
             player.team = this;
