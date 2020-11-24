@@ -12,7 +12,7 @@ namespace Matchmaker
 
         protected _teamCount: number = 0;
         protected _teams: Team[] = [];
-        protected _unevenTeam: Team | null = null;
+        protected _compTeam: Team | null = null;
 
         protected _bench: Bench = new Bench();
 
@@ -42,7 +42,11 @@ namespace Matchmaker
             this.randFillTeams();
             this.createBench();
 
-            this.startLoop();
+            await this.startLoop();
+
+            this.createCompTeam();
+
+            this.displayResult();
         }
 
         /**
@@ -76,7 +80,7 @@ namespace Matchmaker
             // If we have uneven teams, we will make a final team from the bench later
             if (this._teams.length % 2 === 1)
             {
-                this._unevenTeam = this._teams.pop() as Team;
+                this._compTeam = this._teams.pop() as Team;
             }
         }
 
@@ -111,6 +115,52 @@ namespace Matchmaker
                     }
                 }
             });
+        }
+
+        protected createCompTeam()
+        {
+            if (!this._compTeam) { return; }
+
+            for (let i = 0; i < 2; i++)
+            {
+                if (this._bench.tankPlayers.length > 0)
+                {
+                    const player = this._bench.tankPlayers.pop() as Player;
+                    this._bench.unbench(player);
+                    this._compTeam.assignPlayer(player, Player.Role.TANK);
+                }
+                if (this._bench.dpsPlayers.length > 0)
+                {
+                    const player = this._bench.dpsPlayers.pop() as Player;
+                    this._bench.unbench(player);
+                    this._compTeam.assignPlayer(player, Player.Role.DPS);
+                }
+                if (this._bench.supPlayers.length > 0)
+                {
+                    const player = this._bench.supPlayers.pop() as Player;
+                    this._bench.unbench(player);
+                    this._compTeam.assignPlayer(player, Player.Role.SUP);
+                }
+            }
+
+            if (this._bench.remainingPlayers.length > 0 && this._compTeam.getGaps().length > 0)
+            {
+                this._compTeam.getGaps().forEach((r) =>
+                {
+                    this._bench.remainingPlayers.forEach((p) =>
+                    {
+                        if (p.canPlay(r))
+                        {
+                            this._compTeam?.assignPlayer(p, r);
+                            this._bench.unbench(p);
+                        }
+                    });
+                });
+            }
+
+            this._compTeam.setComp();
+
+            this._teams.push(this._compTeam);
         }
 
         protected sortPlayerIntoRoles(players: Player[])
@@ -193,7 +243,7 @@ namespace Matchmaker
                         count += gaps.length;
                     }
 
-                    gaps.forEach((r, i) =>
+                    gaps.forEach((r) =>
                     {
                         if (r === Player.Role.TANK)
                         {
@@ -236,27 +286,31 @@ namespace Matchmaker
                     let gaps = t.getGaps();
                     gaps.forEach((r) =>
                     {
-                        this._bench.remainingPlayers.forEach((p) =>
+                        for (let i = 0; i < this._bench.remainingPlayers.length; i++)
                         {
+                            const p = this._bench.remainingPlayers[i];
                             if (r === Player.Role.TANK && p.roles.tank)
                             {
                                 t.assignPlayer(p, Player.Role.TANK);
                                 this._bench.unbench(p);
                                 count--;
+                                break;
                             }
                             else if (r === Player.Role.DPS && p.roles.dps)
                             {
                                 t.assignPlayer(p, Player.Role.DPS);
                                 this._bench.unbench(p);
                                 count--;
+                                break;
                             }
                             else if (r === Player.Role.SUP && p.roles.sup)
                             {
                                 t.assignPlayer(p, Player.Role.SUP);
                                 this._bench.unbench(p);
                                 count--;
+                                break;
                             }
-                        });
+                        };
                     });
                 });
 
@@ -268,21 +322,25 @@ namespace Matchmaker
                     let gaps = t.getGaps();
                     gaps.forEach((r) =>
                     {
-                        t.allPlayers.forEach((p) =>
+                        for (let i = 0; i < t.allPlayers.length; i++)
                         {
+                            const p = t.allPlayers[i];
                             if (r === Player.Role.TANK && p.roles.tank && p.roles.current != Player.Role.TANK)
                             {
                                 t.swapPlayer(p, p.roles.current, Player.Role.TANK);
+                                break;
                             }
                             else if (r === Player.Role.DPS && p.roles.dps && p.roles.current != Player.Role.DPS)
                             {
                                 t.swapPlayer(p, p.roles.current, Player.Role.DPS);
+                                break;
                             }
                             else if (r === Player.Role.SUP && p.roles.sup && p.roles.current != Player.Role.SUP)
                             {
                                 t.swapPlayer(p, p.roles.current, Player.Role.SUP);
+                                break;
                             }
-                        });
+                        };
                     });
                 });
 
@@ -403,6 +461,83 @@ namespace Matchmaker
                     allSwitches.push(bestSwitch.getID());
                 }
             }
+        }
+
+        protected displayResult()
+        {
+            const table = document.getElementById("Table") as HTMLTableElement;
+
+            if (table.children)
+            {
+                const children = Array.from(table.children);
+                children.forEach((c) =>
+                {
+                    table.removeChild(c);
+                });
+            }
+
+            const rows: HTMLTableRowElement[] = [];
+
+            for (let i = 0; i < Math.ceil(this._teamCount / 2); i++)
+            {
+                rows.push(document.createElement("tr"));
+            }
+
+            this._teams.forEach((t, i) =>
+            {
+                const newCol = document.createElement("td");
+
+                let result = t.name.bold() + "<br />" + "TANK: ";
+
+                t.tankPlayers.forEach((p, j) =>
+                {
+                    result += p.callsign;
+                    if (j != t.tankPlayers.length - 1)
+                    {
+                        result += " | ";
+                    }
+                });
+                result += "<br />" + "DPS: ";
+
+                t.dpsPlayers.forEach((p, j) =>
+                {
+                    result += p.callsign;
+                    if (j != t.dpsPlayers.length - 1)
+                    {
+                        result += " | ";
+                    }
+                });
+                result += "<br />" + "SUP: ";
+
+                t.supPlayers.forEach((p, j) =>
+                {
+                    result += p.callsign;
+                    if (j != t.supPlayers.length - 1)
+                    {
+                        result += " | ";
+                    }
+                });
+                result += "<br />";
+
+                result += "SR: "+t.getAverage().toString().bold();
+                result += "<br />";
+
+                newCol.innerHTML = result;
+
+                for (let j = 0; j < rows.length; j++)
+                {
+                    if (rows[j].children.length < 2)
+                    {
+                        rows[j].appendChild(newCol);
+                        break;
+                    }
+                }
+            });
+
+            rows.forEach((r) =>
+            {
+                table.appendChild(r);
+            })
         }
 
         protected shufflePlayers(array: Player[]): Player[]

@@ -71,6 +71,9 @@ var Matchmaker;
             this._supPlayers.forEach(function (p) { return avg += p.SR.sup; });
             return avg / this._allPlayers.length;
         };
+        Team.prototype.setComp = function () {
+            this._name += " COMP";
+        };
         Team.prototype.getPlayers = function (role) {
             switch (role) {
                 case Matchmaker.Player.Role.TANK:
@@ -100,6 +103,22 @@ var Matchmaker;
                     player.roles.current = Matchmaker.Player.Role.SUP;
                     this._supPlayers.push(player);
                     this._allPlayers.push(player);
+                    break;
+            }
+        };
+        Team.prototype.removePlayer = function (player, role) {
+            switch (role) {
+                case Matchmaker.Player.Role.TANK:
+                    this._tankPlayers.splice(this._tankPlayers.indexOf(player), 1);
+                    this._allPlayers.splice(this._allPlayers.indexOf(player), 1);
+                    break;
+                case Matchmaker.Player.Role.DPS:
+                    this._dpsPlayers.splice(this._dpsPlayers.indexOf(player), 1);
+                    this._allPlayers.splice(this._allPlayers.indexOf(player), 1);
+                    break;
+                case Matchmaker.Player.Role.SUP:
+                    this._supPlayers.splice(this._supPlayers.indexOf(player), 1);
+                    this._allPlayers.splice(this._allPlayers.indexOf(player), 1);
                     break;
             }
         };

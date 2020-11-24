@@ -29,7 +29,11 @@ namespace Matchmaker
 
         public makeSwitch()
         {
-            
+            this.team1.removePlayer(this.player1, this.role1);
+            this.team2.removePlayer(this.player2, this.role2);
+
+            this.team1.assignPlayer(this.player2, this.role1);
+            this.team2.assignPlayer(this.player1, this.role2);
         }
 
         protected calcSRDiff()

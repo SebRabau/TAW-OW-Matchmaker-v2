@@ -2,7 +2,7 @@ namespace Matchmaker
 {
     export class Team
     {
-        protected readonly _name: string;
+        protected _name: string;
         protected _tankPlayers: Player[] = [];
         protected _dpsPlayers: Player[] = [];
         protected _supPlayers: Player[] = [];
@@ -48,6 +48,11 @@ namespace Matchmaker
             return avg / this._allPlayers.length;
         }
 
+        public setComp()
+        {
+            this._name += " - COMP";
+        }
+
         public getPlayers(role: Player.Role): Player[]
         {
             switch (role)
@@ -82,6 +87,25 @@ namespace Matchmaker
                     player.roles.current = Player.Role.SUP;
                     this._supPlayers.push(player);
                     this._allPlayers.push(player);
+                    break;
+            }
+        }
+
+        public removePlayer(player: Player, role: Player.Role)
+        {
+            switch (role)
+            {
+                case Player.Role.TANK:
+                    this._tankPlayers.splice(this._tankPlayers.indexOf(player), 1);
+                    this._allPlayers.splice(this._allPlayers.indexOf(player), 1);
+                    break;
+                case Player.Role.DPS:
+                    this._dpsPlayers.splice(this._dpsPlayers.indexOf(player), 1);
+                    this._allPlayers.splice(this._allPlayers.indexOf(player), 1);
+                    break;
+                case Player.Role.SUP:
+                    this._supPlayers.splice(this._supPlayers.indexOf(player), 1);
+                    this._allPlayers.splice(this._allPlayers.indexOf(player), 1);
                     break;
             }
         }

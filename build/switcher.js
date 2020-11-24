@@ -34,6 +34,10 @@ var Matchmaker;
             return ID;
         };
         Switcher.prototype.makeSwitch = function () {
+            this.team1.removePlayer(this.player1, this.role1);
+            this.team2.removePlayer(this.player2, this.role2);
+            this.team1.assignPlayer(this.player2, this.role1);
+            this.team2.assignPlayer(this.player1, this.role2);
         };
         Switcher.prototype.calcSRDiff = function () {
             var oldTeam1SR = this.team1.getAverage() * this.team1.allPlayers.length;

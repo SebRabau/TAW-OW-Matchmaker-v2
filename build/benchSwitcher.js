@@ -32,6 +32,10 @@ var Matchmaker;
             return ID;
         };
         BenchSwitcher.prototype.makeSwitch = function () {
+            this.team.removePlayer(this.player, this.role);
+            this.bench.unbench(this.bench_Player);
+            this.team.assignPlayer(this.bench_Player, this.role);
+            this.bench.benchPlayer(this.player, this.player.roles.preffered);
         };
         BenchSwitcher.prototype.calcSRDiff = function () {
             var oldTeamSR = this.team.getAverage() * this.team.allPlayers.length;
