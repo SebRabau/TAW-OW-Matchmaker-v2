@@ -188,12 +188,14 @@ var Matchmaker;
                         _this._playersToMatchmake.push(_this._playersMap.get(p));
                     }
                 });
-                // remove last \n
-                list_1 = list_1.slice(0, list_1.length - 1);
-                missingPlayerList_1 = missingPlayerList_1.slice(0, missingPlayerList_1.length - 1);
                 parent.value = list_1;
                 parent.disabled = true;
                 parent.scrollTop = 0;
+                var a = document.createElement("a");
+                var link = document.createTextNode("Link to spreadsheet");
+                a.appendChild(link);
+                a.href = "https://docs.google.com/spreadsheets/d/1pRriIo_BLP3RWQ8Hjg9LfSg-ytl9CEn6ct9C4dYry8k/edit?usp=sharing";
+                missing.appendChild(a);
                 missing.innerText = missingPlayers_1.length > 0 ? missingPlayerList_1 : "";
             }
         };

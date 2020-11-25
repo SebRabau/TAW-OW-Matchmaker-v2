@@ -72,7 +72,7 @@ var Matchmaker;
             return avg / this._allPlayers.length;
         };
         Team.prototype.setComp = function () {
-            this._name += " COMP";
+            this._name += " - COMP";
         };
         Team.prototype.getPlayers = function (role) {
             switch (role) {

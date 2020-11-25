@@ -147,14 +147,16 @@ namespace Matchmaker
             {
                 this._compTeam.getGaps().forEach((r) =>
                 {
-                    this._bench.remainingPlayers.forEach((p) =>
+                    for (let i = 0; i < this._bench.remainingPlayers.length; i++)
                     {
+                        const p = this._bench.remainingPlayers[i];
                         if (p.canPlay(r))
                         {
                             this._compTeam?.assignPlayer(p, r);
                             this._bench.unbench(p);
+                            break;
                         }
-                    });
+                    };
                 });
             }
 

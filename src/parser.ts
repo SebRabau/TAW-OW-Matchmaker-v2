@@ -244,10 +244,6 @@ namespace Matchmaker
                     }
                 });
 
-                // remove last \n
-                list = list.slice(0, list.length - 1);
-                missingPlayerList = missingPlayerList.slice(0, missingPlayerList.length - 1);
-
                 parent.value = list;
                 parent.disabled = true;
                 parent.scrollTop = 0;

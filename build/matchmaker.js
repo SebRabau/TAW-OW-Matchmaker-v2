@@ -158,13 +158,16 @@ var Matchmaker;
             }
             if (this._bench.remainingPlayers.length > 0 && this._compTeam.getGaps().length > 0) {
                 this._compTeam.getGaps().forEach(function (r) {
-                    _this._bench.remainingPlayers.forEach(function (p) {
-                        var _a;
+                    var _a;
+                    for (var i = 0; i < _this._bench.remainingPlayers.length; i++) {
+                        var p = _this._bench.remainingPlayers[i];
                         if (p.canPlay(r)) {
                             (_a = _this._compTeam) === null || _a === void 0 ? void 0 : _a.assignPlayer(p, r);
                             _this._bench.unbench(p);
+                            break;
                         }
-                    });
+                    }
+                    ;
                 });
             }
             this._compTeam.setComp();
