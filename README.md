@@ -1,4 +1,4 @@
-# Overwatch Matchmaker for TAW Gaming Community
+# Overwatch Auto-Phil Matchmaker for TAW Gaming Community
 Find out more about The Art of Warfare (TAW) Gaming Community here: [www.taw.net](www.taw.net).
 
 ## How to build
@@ -9,3 +9,7 @@ To build a closure compiled build (clojure compiles app.js into app-compiled.js)
 You can also use `tsc -w` for the compiler to watch for changes and build each time you save.
 
 If you don't have typescript, you will need to install node if you haven't already ([https://nodejs.org/en/](https://nodejs.org/en/)), then run `npm install -g typescript`.
+
+## How to Run
+
+This has been designed to work with the attendance format of TAW events. View an event's attendance, then select all members from top left to bottom right, then copy and paste in the box on the webpage. Users will be matched against a google spreadsheet. A way of automating adding and updating player information is currently WIP.
