@@ -138,12 +138,13 @@ table
     text-align: left;
     font-size: 12pt;
     color: black;
-    width: 700px;
+    width: 900px;
     margin-left: auto;
     margin-right: auto;
 }
 
-td
+td, tr
 {
     padding: 10px;
+    padding-left: 80px;
 }

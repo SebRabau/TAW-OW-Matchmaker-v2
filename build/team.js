@@ -69,7 +69,7 @@ var Matchmaker;
             this._tankPlayers.forEach(function (p) { return avg += p.SR.tank; });
             this._dpsPlayers.forEach(function (p) { return avg += p.SR.dps; });
             this._supPlayers.forEach(function (p) { return avg += p.SR.sup; });
-            return avg / this._allPlayers.length;
+            return Math.round(avg / this._allPlayers.length);
         };
         Team.prototype.setComp = function () {
             this._name += " - COMP";

@@ -403,6 +403,7 @@ var Matchmaker;
         };
         Matchmaker.prototype.displayResult = function () {
             var table = document.getElementById("Table");
+            var unpicked = document.getElementById("NotInTeam");
             if (table.children) {
                 var children = Array.from(table.children);
                 children.forEach(function (c) {
@@ -417,21 +418,21 @@ var Matchmaker;
                 var newCol = document.createElement("td");
                 var result = t.name.bold() + "<br />" + "TANK: ";
                 t.tankPlayers.forEach(function (p, j) {
-                    result += p.callsign;
+                    result += p.callsign + " (" + p.SR.tank + ")";
                     if (j != t.tankPlayers.length - 1) {
                         result += " | ";
                     }
                 });
                 result += "<br />" + "DPS: ";
                 t.dpsPlayers.forEach(function (p, j) {
-                    result += p.callsign;
+                    result += p.callsign + " (" + p.SR.dps + ")";
                     if (j != t.dpsPlayers.length - 1) {
                         result += " | ";
                     }
                 });
                 result += "<br />" + "SUP: ";
                 t.supPlayers.forEach(function (p, j) {
-                    result += p.callsign;
+                    result += p.callsign + " (" + p.SR.sup + ")";
                     if (j != t.supPlayers.length - 1) {
                         result += " | ";
                     }
@@ -449,6 +450,26 @@ var Matchmaker;
             });
             rows.forEach(function (r) {
                 table.appendChild(r);
+            });
+            if (this._bench.remainingPlayers.length > 0) {
+                unpicked.style.display = "block";
+            }
+            this._bench.remainingPlayers.forEach(function (p) {
+                var row = document.createElement("tr");
+                var cell = document.createElement("td");
+                var result = p.callsign.bold() + " | TANK: " + p.SR.tank.toString() + ", DPS: " + p.SR.dps.toString() + ", SUP: " + p.SR.sup.toString() + ", ROLES: ";
+                if (p.roles.tank) {
+                    result += p.roles.preffered === Matchmaker_1.Player.Role.TANK ? "[T]" : "T";
+                }
+                if (p.roles.dps) {
+                    result += p.roles.preffered === Matchmaker_1.Player.Role.DPS ? "[D]" : "D";
+                }
+                if (p.roles.sup) {
+                    result += p.roles.preffered === Matchmaker_1.Player.Role.SUP ? "[S]" : "S";
+                }
+                cell.innerHTML = result;
+                row.appendChild(cell);
+                unpicked.appendChild(row);
             });
         };
         Matchmaker.prototype.shufflePlayers = function (array) {

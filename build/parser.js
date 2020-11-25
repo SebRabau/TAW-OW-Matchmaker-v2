@@ -191,11 +191,6 @@ var Matchmaker;
                 parent.value = list_1;
                 parent.disabled = true;
                 parent.scrollTop = 0;
-                var a = document.createElement("a");
-                var link = document.createTextNode("Link to spreadsheet");
-                a.appendChild(link);
-                a.href = "https://docs.google.com/spreadsheets/d/1pRriIo_BLP3RWQ8Hjg9LfSg-ytl9CEn6ct9C4dYry8k/edit?usp=sharing";
-                missing.appendChild(a);
                 missing.innerText = missingPlayers_1.length > 0 ? missingPlayerList_1 : "";
             }
         };

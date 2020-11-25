@@ -468,6 +468,7 @@ namespace Matchmaker
         protected displayResult()
         {
             const table = document.getElementById("Table") as HTMLTableElement;
+            const unpicked = document.getElementById("NotInTeam") as HTMLTableElement;
 
             if (table.children)
             {
@@ -493,7 +494,7 @@ namespace Matchmaker
 
                 t.tankPlayers.forEach((p, j) =>
                 {
-                    result += p.callsign;
+                    result += p.callsign + " (" + p.SR.tank + ")";
                     if (j != t.tankPlayers.length - 1)
                     {
                         result += " | ";
@@ -503,7 +504,7 @@ namespace Matchmaker
 
                 t.dpsPlayers.forEach((p, j) =>
                 {
-                    result += p.callsign;
+                    result += p.callsign + " (" + p.SR.dps + ")";
                     if (j != t.dpsPlayers.length - 1)
                     {
                         result += " | ";
@@ -513,7 +514,7 @@ namespace Matchmaker
 
                 t.supPlayers.forEach((p, j) =>
                 {
-                    result += p.callsign;
+                    result += p.callsign + " (" + p.SR.sup + ")";
                     if (j != t.supPlayers.length - 1)
                     {
                         result += " | ";
@@ -539,7 +540,22 @@ namespace Matchmaker
             rows.forEach((r) =>
             {
                 table.appendChild(r);
-            })
+            });
+
+            if (this._bench.remainingPlayers.length > 0) { unpicked.style.display = "block" }
+
+            this._bench.remainingPlayers.forEach((p) =>
+            {
+                const row = document.createElement("tr");
+                const cell = document.createElement("td");
+                let result = p.callsign.bold() + " | TANK: " + p.SR.tank.toString() + ", DPS: " + p.SR.dps.toString() + ", SUP: " + p.SR.sup.toString() + ", ROLES: ";
+                if (p.roles.tank) { result += p.roles.preffered === Player.Role.TANK ? "[T]" : "T" }
+                if (p.roles.dps) { result += p.roles.preffered === Player.Role.DPS ? "[D]" : "D" }
+                if (p.roles.sup) { result += p.roles.preffered === Player.Role.SUP ? "[S]" : "S" }
+                cell.innerHTML = result;
+                row.appendChild(cell);
+                unpicked.appendChild(row);
+            });
         }
 
         protected shufflePlayers(array: Player[]): Player[]

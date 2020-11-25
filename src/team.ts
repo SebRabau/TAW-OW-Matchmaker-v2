@@ -45,7 +45,7 @@ namespace Matchmaker
             this._tankPlayers.forEach((p) => avg += p.SR.tank);
             this._dpsPlayers.forEach((p) => avg += p.SR.dps);
             this._supPlayers.forEach((p) => avg += p.SR.sup);
-            return avg / this._allPlayers.length;
+            return Math.round(avg / this._allPlayers.length);
         }
 
         public setComp()
