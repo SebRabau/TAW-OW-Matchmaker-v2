@@ -132,12 +132,23 @@ namespace Matchmaker
             const map: string[][] = [];
             const players: string[] = [];
 
+            const isChrome = navigator.userAgent.indexOf("Chrome") > -1;
+            const isOpera = navigator.userAgent.indexOf("Opera") > -1;
+
             // Map attendance
             const lines = attendance.split("\n");
             lines.forEach((l) =>
             {
-                const elems = l.split("\t");
-                map.push(elems);
+                if (isChrome || isOpera)
+                {
+                    const elems = l.split("\t");
+                    map.push(elems);
+                }
+                else
+                {
+                    const elems = l.split(" \t");
+                    map.push(elems);
+                }
             });
 
             // Store attended people
