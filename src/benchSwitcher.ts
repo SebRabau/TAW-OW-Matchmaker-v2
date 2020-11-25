@@ -37,15 +37,11 @@ namespace Matchmaker
 
         protected calcSRDiff()
         {
-            const oldTeamSR = this.team.getAverage() * this.team.allPlayers.length;
+            const p1SR = this.player.getSR(this.role);
+            const p2SR = this.bench_Player.getSR(this.role);
 
-            const teamWithoutPlayer = oldTeamSR - this.player.getSR(this.role);
-
-            const teamAfterSwitch = teamWithoutPlayer + this.bench_Player.getSR(this.role);
-
-            const newTeam = (teamAfterSwitch - oldTeamSR) / this.team.allPlayers.length;
-
-            this._SRChange = Math.abs(oldTeamSR - newTeam);
+            const diff = p2SR - p1SR;
+            this._SRChange = diff / 6;
         }
 
         protected calcSwitchPossible()

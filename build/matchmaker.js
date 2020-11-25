@@ -320,9 +320,11 @@ var Matchmaker;
             }
         };
         Matchmaker.prototype.balance = function () {
-            for (var i = 0; i < this._teams.length / 2; i += 2) {
-                if (this._teams[i] && this._teams[i + 1]) {
-                    this.doBalance(this._teams[i], this._teams[i + 1]);
+            for (var i = 0; i < this._teams.length; i++) {
+                if (i === 0 || i % 2 === 0) {
+                    if (this._teams[i] && this._teams[i + 1]) {
+                        this.doBalance(this._teams[i], this._teams[i + 1]);
+                    }
                 }
             }
         };
@@ -330,17 +332,16 @@ var Matchmaker;
             var _this = this;
             var avg1 = team1.getAverage();
             var avg2 = team2.getAverage();
-            var startDiff = Math.abs(Math.round(avg1 - avg2));
             var switchesPossible = true;
             var allSwitches = [];
             var roleMap = [Matchmaker_1.Player.Role.TANK, Matchmaker_1.Player.Role.DPS, Matchmaker_1.Player.Role.SUP];
-            var switchMap = new Map();
             var count = 0;
             var _loop_1 = function () {
+                var switchMap = new Map();
                 count++;
                 avg1 = team1.getAverage();
                 avg2 = team2.getAverage();
-                var runningDiff = Math.abs(Math.round(avg1 - avg2));
+                var runningDiff = Math.round(avg1 - avg2);
                 roleMap.forEach(function (role1) {
                     roleMap.forEach(function (role2) {
                         var players1 = team1.getPlayers(role1);

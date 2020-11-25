@@ -352,11 +352,14 @@ namespace Matchmaker
 
         protected balance()
         {
-            for (let i = 0; i < this._teams.length / 2; i+=2)
+            for (let i = 0; i < this._teams.length; i++)
             {
-                if (this._teams[i] && this._teams[i+1])
+                if (i === 0 || i % 2 === 0)
                 {
-                    this.doBalance(this._teams[i], this._teams[i+1]);
+                    if (this._teams[i] && this._teams[i+1])
+                    {
+                        this.doBalance(this._teams[i], this._teams[i+1]);
+                    }
                 }
             }
         }
@@ -365,22 +368,21 @@ namespace Matchmaker
         {
             let avg1 = team1.getAverage();
             let avg2 = team2.getAverage();
-            const startDiff = Math.abs(Math.round(avg1 - avg2));
 
             let switchesPossible = true;
             const allSwitches: string[] = [];
 
             const roleMap: Player.Role[] = [ Player.Role.TANK, Player.Role.DPS, Player.Role.SUP ];
-            const switchMap = new Map<number, Switcher | BenchSwitcher>();
 
             let count = 0;
 
             while (switchesPossible && count < 20)
             {
+                const switchMap = new Map<number, Switcher | BenchSwitcher>();
                 count++;
                 avg1 = team1.getAverage();
                 avg2 = team2.getAverage();
-                const runningDiff = Math.abs(Math.round(avg1 - avg2));
+                const runningDiff = Math.round(avg1 - avg2);
 
                 roleMap.forEach((role1) =>
                 {

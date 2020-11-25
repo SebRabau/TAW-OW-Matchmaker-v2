@@ -38,11 +38,10 @@ var Matchmaker;
             this.bench.benchPlayer(this.player, this.player.roles.preffered);
         };
         BenchSwitcher.prototype.calcSRDiff = function () {
-            var oldTeamSR = this.team.getAverage() * this.team.allPlayers.length;
-            var teamWithoutPlayer = oldTeamSR - this.player.getSR(this.role);
-            var teamAfterSwitch = teamWithoutPlayer + this.bench_Player.getSR(this.role);
-            var newTeam = (teamAfterSwitch - oldTeamSR) / this.team.allPlayers.length;
-            this._SRChange = Math.abs(oldTeamSR - newTeam);
+            var p1SR = this.player.getSR(this.role);
+            var p2SR = this.bench_Player.getSR(this.role);
+            var diff = p2SR - p1SR;
+            this._SRChange = diff / 6;
         };
         BenchSwitcher.prototype.calcSwitchPossible = function () {
             this._switchPossible = this.bench_Player.canPlay(this.role);

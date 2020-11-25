@@ -47,10 +47,10 @@ namespace Matchmaker
             const team1AfterSwitch = team1WithoutPlayer + this.player2.getSR(this.role1);
             const team2AfterSwitch = team2WithoutPlayer + this.player1.getSR(this.role2);
 
-            const newTeam1 = (team1AfterSwitch - oldTeam1SR) / this.team1.allPlayers.length;
-            const newTeam2 = (team2AfterSwitch - oldTeam2SR) / this.team2.allPlayers.length;
+            const newTeam1 = team1AfterSwitch / this.team1.allPlayers.length;
+            const newTeam2 = team2AfterSwitch / this.team2.allPlayers.length;
 
-            this._SRChange = Math.abs(newTeam1 - newTeam2);
+            this._SRChange = newTeam1 - newTeam2;
         }
 
         protected calcSwitchPossible()

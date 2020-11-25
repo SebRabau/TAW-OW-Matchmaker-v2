@@ -46,9 +46,9 @@ var Matchmaker;
             var team2WithoutPlayer = oldTeam2SR - this.player2.getSR(this.role2);
             var team1AfterSwitch = team1WithoutPlayer + this.player2.getSR(this.role1);
             var team2AfterSwitch = team2WithoutPlayer + this.player1.getSR(this.role2);
-            var newTeam1 = (team1AfterSwitch - oldTeam1SR) / this.team1.allPlayers.length;
-            var newTeam2 = (team2AfterSwitch - oldTeam2SR) / this.team2.allPlayers.length;
-            this._SRChange = Math.abs(newTeam1 - newTeam2);
+            var newTeam1 = team1AfterSwitch / this.team1.allPlayers.length;
+            var newTeam2 = team2AfterSwitch / this.team2.allPlayers.length;
+            this._SRChange = newTeam1 - newTeam2;
         };
         Switcher.prototype.calcSwitchPossible = function () {
             this._switchPossible = this.player1.canPlay(this.role2) && this.player2.canPlay(this.role1);
