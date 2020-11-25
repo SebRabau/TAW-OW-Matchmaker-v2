@@ -48,6 +48,26 @@ namespace Matchmaker
             return Math.round(avg / this._allPlayers.length);
         }
 
+        public getDeviation()
+        {
+            const results: number[] = [];
+            const sqrResults: number[] = [];
+
+            this._tankPlayers.forEach((p) => results.push(p.SR.tank));
+            this._dpsPlayers.forEach((p) => results.push(p.SR.dps));
+            this._supPlayers.forEach((p) => results.push(p.SR.sup));
+
+            results.forEach((sr) =>
+            {
+                sqrResults.push(Math.pow(sr - this.getAverage(), 2));
+            });
+
+            let sqrSum = 0;
+            sqrResults.forEach((r) => sqrSum += r);
+
+            return Math.floor(Math.sqrt(sqrSum / this._allPlayers.length));
+        }
+
         public setComp()
         {
             this._name += " - COMP";

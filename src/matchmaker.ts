@@ -524,7 +524,10 @@ namespace Matchmaker
                 });
                 result += "<br />";
 
-                result += "SR: "+t.getAverage().toString().bold();
+                result += "SR: " + t.getAverage().toString().bold();
+                result += "<br />";
+
+                result += "SD: " + t.getDeviation();
                 result += "<br />";
 
                 newCol.innerHTML = result;

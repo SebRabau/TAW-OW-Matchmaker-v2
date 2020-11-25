@@ -71,6 +71,20 @@ var Matchmaker;
             this._supPlayers.forEach(function (p) { return avg += p.SR.sup; });
             return Math.round(avg / this._allPlayers.length);
         };
+        Team.prototype.getDeviation = function () {
+            var _this = this;
+            var results = [];
+            var sqrResults = [];
+            this._tankPlayers.forEach(function (p) { return results.push(p.SR.tank); });
+            this._dpsPlayers.forEach(function (p) { return results.push(p.SR.dps); });
+            this._supPlayers.forEach(function (p) { return results.push(p.SR.sup); });
+            results.forEach(function (sr) {
+                sqrResults.push(Math.pow(sr - _this.getAverage(), 2));
+            });
+            var sqrSum = 0;
+            sqrResults.forEach(function (r) { return sqrSum += r; });
+            return Math.floor(Math.sqrt(sqrSum / this._allPlayers.length));
+        };
         Team.prototype.setComp = function () {
             this._name += " - COMP";
         };
