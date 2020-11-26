@@ -34,6 +34,7 @@ var Matchmaker;
             return ID;
         };
         Switcher.prototype.makeSwitch = function () {
+            console.log("Switching " + this.player1.callsign + " off " + this.team1.name + " for " + this.player2.callsign + " on " + this.team2.name);
             this.team1.removePlayer(this.player1, this.role1);
             this.team2.removePlayer(this.player2, this.role2);
             this.team1.assignPlayer(this.player2, this.role1);

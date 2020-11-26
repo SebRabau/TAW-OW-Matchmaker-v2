@@ -217,8 +217,10 @@ var Matchmaker;
             this._teams.forEach(function (t) {
                 var gaps = t.getGaps();
                 if (gaps.length === 0) {
-                    console.log("No Gaps in team: " + t.name);
                     fullCount++;
+                }
+                else {
+                    console.log("Gaps in team: " + t.name);
                 }
             });
             if (fullCount === this._teams.length) {
@@ -320,11 +322,9 @@ var Matchmaker;
             }
         };
         Matchmaker.prototype.balance = function () {
-            for (var i = 0; i < this._teams.length; i++) {
-                if (i === 0 || i % 2 === 0) {
-                    if (this._teams[i] && this._teams[i + 1]) {
-                        this.doBalance(this._teams[i], this._teams[i + 1]);
-                    }
+            for (var i = 0; i < this._teams.length; i += 2) {
+                if (this._teams[i] && this._teams[i + 1]) {
+                    this.doBalance(this._teams[i], this._teams[i + 1]);
                 }
             }
         };
@@ -375,7 +375,7 @@ var Matchmaker;
                     });
                     players2.forEach(function (p2) {
                         playersBench.forEach(function (pb) {
-                            var switcher = new Matchmaker_1.BenchSwitcher(team1, role, p2, _this._bench, pb);
+                            var switcher = new Matchmaker_1.BenchSwitcher(team2, role, p2, _this._bench, pb);
                             var change = switcher.SRChange;
                             var key = Math.abs(runningDiff + change);
                             if (Math.abs(key) <= Math.abs(runningDiff) && change != 0 && switcher.switchPossible && allSwitches.indexOf(switcher.getID()) === -1) {
@@ -392,7 +392,8 @@ var Matchmaker;
                 switches.sort(function (a, b) { return b - a; });
                 var bestSwitch = switchMap.get(switches.shift());
                 if (bestSwitch instanceof Matchmaker_1.Switcher || bestSwitch instanceof Matchmaker_1.BenchSwitcher) {
-                    var success = bestSwitch.makeSwitch();
+                    console.log("Doing best switch with change of " + bestSwitch.SRChange + ": " + bestSwitch.getID());
+                    bestSwitch.makeSwitch();
                     allSwitches.push(bestSwitch.getID());
                 }
             };

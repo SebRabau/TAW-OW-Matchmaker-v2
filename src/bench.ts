@@ -19,6 +19,7 @@ namespace Matchmaker
 
         public benchPlayer(player: Player, role: Player.Role)
         {
+            console.log("Benching: " + player.callsign);
             switch(role)
             {
                 case Player.Role.TANK:
@@ -34,10 +35,12 @@ namespace Matchmaker
                     this.otherPlayers.push(player);
                     break;
             }
+            this.refreshRemainingPlayers();
         }
 
         public unbench(player: Player)
         {
+            console.log("Unbenching " + player.callsign);
             if (this.tankPlayers.indexOf(player) > -1)
             {
                 this.tankPlayers.splice(this.tankPlayers.indexOf(player), 1);
@@ -54,6 +57,7 @@ namespace Matchmaker
             {
                 this.otherPlayers.splice(this.otherPlayers.indexOf(player), 1);
             }
+            this.refreshRemainingPlayers();
         }
 
         protected refreshRemainingPlayers()
@@ -65,6 +69,10 @@ namespace Matchmaker
                 this.supPlayers,
                 this.otherPlayers
             );
+
+            let players = "Players in bench: ";
+            this._remainingPlayers.forEach((p, i) => players += p.callsign + (i === this._remainingPlayers.length - 1 ? "" : "; "));
+            console.log(players);
         }
     }
 }

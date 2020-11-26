@@ -18,6 +18,7 @@ var Matchmaker;
             configurable: true
         });
         Bench.prototype.benchPlayer = function (player, role) {
+            console.log("Benching: " + player.callsign);
             switch (role) {
                 case Matchmaker.Player.Role.TANK:
                     this.tankPlayers.push(player);
@@ -32,8 +33,10 @@ var Matchmaker;
                     this.otherPlayers.push(player);
                     break;
             }
+            this.refreshRemainingPlayers();
         };
         Bench.prototype.unbench = function (player) {
+            console.log("Unbenching " + player.callsign);
             if (this.tankPlayers.indexOf(player) > -1) {
                 this.tankPlayers.splice(this.tankPlayers.indexOf(player), 1);
             }
@@ -46,10 +49,15 @@ var Matchmaker;
             if (this.otherPlayers.indexOf(player) > -1) {
                 this.otherPlayers.splice(this.otherPlayers.indexOf(player), 1);
             }
+            this.refreshRemainingPlayers();
         };
         Bench.prototype.refreshRemainingPlayers = function () {
+            var _this = this;
             this._remainingPlayers = [];
             this._remainingPlayers = this._remainingPlayers.concat(this.dpsPlayers, this.tankPlayers, this.supPlayers, this.otherPlayers);
+            var players = "Players in bench: ";
+            this._remainingPlayers.forEach(function (p, i) { return players += p.callsign + (i === _this._remainingPlayers.length - 1 ? "" : "; "); });
+            console.log(players);
         };
         return Bench;
     }());

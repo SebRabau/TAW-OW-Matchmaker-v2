@@ -28,6 +28,8 @@ namespace Matchmaker
 
         public makeSwitch()
         {
+            console.log("Switching " + this.player.callsign + " off " + this.team.name + " for " + this.bench_Player.callsign + " on bench");
+
             this.team.removePlayer(this.player, this.role);
             this.bench.unbench(this.bench_Player);
 

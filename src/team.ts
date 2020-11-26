@@ -91,6 +91,7 @@ namespace Matchmaker
         public assignPlayer(player: Player, role: Player.Role)
         {
             player.team = this;
+            console.log("Assigning " + player.callsign + " to " + this.name);
             switch(role)
             {
                 case Player.Role.TANK:
@@ -109,10 +110,12 @@ namespace Matchmaker
                     this._allPlayers.push(player);
                     break;
             }
+            this.printTeam();
         }
 
         public removePlayer(player: Player, role: Player.Role)
         {
+            console.log("Removing " + player.callsign + " from " + this.name);
             switch (role)
             {
                 case Player.Role.TANK:
@@ -128,10 +131,12 @@ namespace Matchmaker
                     this._allPlayers.splice(this._allPlayers.indexOf(player), 1);
                     break;
             }
+            this.printTeam();
         }
 
         public swapPlayer(player: Player, oldRole: Player.Role, newRole: Player.Role)
         {
+            console.log("Swapping " + player.callsign + " from role " + oldRole + " to role " + newRole);
             switch(oldRole)
             {
                 case Player.Role.TANK:
@@ -160,6 +165,14 @@ namespace Matchmaker
                     player.roles.current = Player.Role.SUP;
                     break;
             }
+            this.printTeam();
+        }
+
+        protected printTeam()
+        {
+            let players = "Players in team " + this.name + ": ";
+            this._allPlayers.forEach((p, i) => players += p.callsign + (i === this._allPlayers.length - 1 ? "" : "; "));
+            console.log(players);
         }
     }
 }

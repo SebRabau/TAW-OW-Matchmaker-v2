@@ -29,6 +29,8 @@ namespace Matchmaker
 
         public makeSwitch()
         {
+            console.log("Switching " + this.player1.callsign + " off " + this.team1.name + " for " + this.player2.callsign + " on " + this.team2.name);
+
             this.team1.removePlayer(this.player1, this.role1);
             this.team2.removePlayer(this.player2, this.role2);
 

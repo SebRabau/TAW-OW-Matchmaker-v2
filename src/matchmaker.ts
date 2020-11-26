@@ -225,8 +225,11 @@ namespace Matchmaker
                 let gaps = t.getGaps();
                 if (gaps.length === 0)
                 {
-                    console.log("No Gaps in team: "+t.name);
                     fullCount++;
+                }
+                else
+                {
+                    console.log("Gaps in team: "+t.name);
                 }
             });
 
@@ -352,14 +355,11 @@ namespace Matchmaker
 
         protected balance()
         {
-            for (let i = 0; i < this._teams.length; i++)
+            for (let i = 0; i < this._teams.length; i+=2)
             {
-                if (i === 0 || i % 2 === 0)
+                if (this._teams[i] && this._teams[i+1])
                 {
-                    if (this._teams[i] && this._teams[i+1])
-                    {
-                        this.doBalance(this._teams[i], this._teams[i+1]);
-                    }
+                    this.doBalance(this._teams[i], this._teams[i+1]);
                 }
             }
         }
@@ -436,7 +436,7 @@ namespace Matchmaker
                     {
                         playersBench.forEach((pb) =>
                         {
-                            const switcher = new BenchSwitcher(team1, role, p2, this._bench, pb);
+                            const switcher = new BenchSwitcher(team2, role, p2, this._bench, pb);
 
                             const change = switcher.SRChange;
                             const key = Math.abs(runningDiff + change);
@@ -461,7 +461,8 @@ namespace Matchmaker
                 const bestSwitch = switchMap.get(switches.shift() as number);
                 if (bestSwitch instanceof Switcher || bestSwitch instanceof BenchSwitcher)
                 {
-                    const success = bestSwitch.makeSwitch();
+                    console.log("Doing best switch with change of " + bestSwitch.SRChange + ": " + bestSwitch.getID());
+                    bestSwitch.makeSwitch();
                     allSwitches.push(bestSwitch.getID());
                 }
             }

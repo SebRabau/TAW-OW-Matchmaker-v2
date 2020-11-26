@@ -102,6 +102,7 @@ var Matchmaker;
         };
         Team.prototype.assignPlayer = function (player, role) {
             player.team = this;
+            console.log("Assigning " + player.callsign + " to " + this.name);
             switch (role) {
                 case Matchmaker.Player.Role.TANK:
                     player.roles.current = Matchmaker.Player.Role.TANK;
@@ -119,8 +120,10 @@ var Matchmaker;
                     this._allPlayers.push(player);
                     break;
             }
+            this.printTeam();
         };
         Team.prototype.removePlayer = function (player, role) {
+            console.log("Removing " + player.callsign + " from " + this.name);
             switch (role) {
                 case Matchmaker.Player.Role.TANK:
                     this._tankPlayers.splice(this._tankPlayers.indexOf(player), 1);
@@ -135,8 +138,10 @@ var Matchmaker;
                     this._allPlayers.splice(this._allPlayers.indexOf(player), 1);
                     break;
             }
+            this.printTeam();
         };
         Team.prototype.swapPlayer = function (player, oldRole, newRole) {
+            console.log("Swapping " + player.callsign + " from role " + oldRole + " to role " + newRole);
             switch (oldRole) {
                 case Matchmaker.Player.Role.TANK:
                     this._tankPlayers.splice(this._tankPlayers.indexOf(player), 1);
@@ -162,6 +167,13 @@ var Matchmaker;
                     player.roles.current = Matchmaker.Player.Role.SUP;
                     break;
             }
+            this.printTeam();
+        };
+        Team.prototype.printTeam = function () {
+            var _this = this;
+            var players = "Players in team " + this.name + ": ";
+            this._allPlayers.forEach(function (p, i) { return players += p.callsign + (i === _this._allPlayers.length - 1 ? "" : "; "); });
+            console.log(players);
         };
         return Team;
     }());

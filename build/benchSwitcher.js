@@ -32,6 +32,7 @@ var Matchmaker;
             return ID;
         };
         BenchSwitcher.prototype.makeSwitch = function () {
+            console.log("Switching " + this.player.callsign + " off " + this.team.name + " for " + this.bench_Player.callsign + " on bench");
             this.team.removePlayer(this.player, this.role);
             this.bench.unbench(this.bench_Player);
             this.team.assignPlayer(this.bench_Player, this.role);
