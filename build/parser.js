@@ -100,19 +100,11 @@ var Matchmaker;
         Parser.prototype.parseAttendance = function (attendance) {
             var map = [];
             var players = [];
-            var isChrome = navigator.userAgent.indexOf("Chrome") > -1;
-            var isOpera = navigator.userAgent.indexOf("Opera") > -1;
             // Map attendance
             var lines = attendance.split("\n");
             lines.forEach(function (l) {
-                if (isChrome || isOpera) {
-                    var elems = l.split("\t");
-                    map.push(elems);
-                }
-                else {
-                    var elems = l.split(" \t");
-                    map.push(elems);
-                }
+                var elems = l.replace(/ /g, "").split('\u0009');
+                map.push(elems);
             });
             // Store attended people
             map.forEach(function (e) {
