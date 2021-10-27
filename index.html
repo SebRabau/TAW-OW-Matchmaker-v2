@@ -12,6 +12,10 @@
         <img class="title" src="https://fontmeme.com/permalink/201124/a5c91c2cd9a91f6d4a2b3ed224dbcb48.png"><br />
 
         <div>
+            <!--Add buttons to initiate auth sequence and sign out-->
+            <button id="authorize_button" style="display: none;">Authorize</button>
+            <button id="signout_button" style="display: none;">Sign Out</button>
+
             <textarea id="Attendance" cols="50" rows="15" required="required" placeholder="Paste Attendance Here. # a line to not matchmake a player."></textarea>
             <br />
             <div id="Buttons">
@@ -26,5 +30,10 @@
         <table id="NotInTeam" style="display: none; color: blue;">
             <td><b>Players not in teams: [] = main</b></td>
         </table>
+
+        <pre id="content" style="white-space: pre-wrap;"></pre>
+
+        <script src="src/js/gapi.js"></script>
+        <script async defer src="https://apis.google.com/js/api.js" onload="this.onload=function(){};handleClientLoad()" onreadystatechange="if (this.readyState === 'complete') this.onload()"></script>
     </body>
 </html>

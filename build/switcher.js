@@ -16,12 +16,12 @@ var Matchmaker;
         }
         Object.defineProperty(Switcher.prototype, "SRChange", {
             get: function () { return this._SRChange; },
-            enumerable: false,
+            enumerable: true,
             configurable: true
         });
         Object.defineProperty(Switcher.prototype, "switchPossible", {
             get: function () { return this._switchPossible; },
-            enumerable: false,
+            enumerable: true,
             configurable: true
         });
         Switcher.prototype.getID = function () {

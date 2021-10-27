@@ -15,12 +15,12 @@ var Matchmaker;
         }
         Object.defineProperty(BenchSwitcher.prototype, "SRChange", {
             get: function () { return this._SRChange; },
-            enumerable: false,
+            enumerable: true,
             configurable: true
         });
         Object.defineProperty(BenchSwitcher.prototype, "switchPossible", {
             get: function () { return this._switchPossible; },
-            enumerable: false,
+            enumerable: true,
             configurable: true
         });
         BenchSwitcher.prototype.getID = function () {

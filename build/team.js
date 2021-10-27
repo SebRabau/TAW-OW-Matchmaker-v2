@@ -11,27 +11,27 @@ var Matchmaker;
         }
         Object.defineProperty(Team.prototype, "tankPlayers", {
             get: function () { return this._tankPlayers; },
-            enumerable: false,
+            enumerable: true,
             configurable: true
         });
         Object.defineProperty(Team.prototype, "dpsPlayers", {
             get: function () { return this._dpsPlayers; },
-            enumerable: false,
+            enumerable: true,
             configurable: true
         });
         Object.defineProperty(Team.prototype, "supPlayers", {
             get: function () { return this._supPlayers; },
-            enumerable: false,
+            enumerable: true,
             configurable: true
         });
         Object.defineProperty(Team.prototype, "allPlayers", {
             get: function () { return this._allPlayers; },
-            enumerable: false,
+            enumerable: true,
             configurable: true
         });
         Object.defineProperty(Team.prototype, "name", {
             get: function () { return this._name; },
-            enumerable: false,
+            enumerable: true,
             configurable: true
         });
         Team.prototype.getID = function () {

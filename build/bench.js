@@ -14,7 +14,7 @@ var Matchmaker;
                 this.refreshRemainingPlayers();
                 return this._remainingPlayers;
             },
-            enumerable: false,
+            enumerable: true,
             configurable: true
         });
         Bench.prototype.benchPlayer = function (player, role) {

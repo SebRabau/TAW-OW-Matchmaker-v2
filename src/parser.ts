@@ -1,73 +1,8 @@
+
+let playerDatabase: any[][] = [];
+
 namespace Matchmaker
 {
-    const spreadsheetUrl = "https://spreadsheets.google.com/feeds/cells/1pRriIo_BLP3RWQ8Hjg9LfSg-ytl9CEn6ct9C4dYry8k/1/public/values?alt=json-in-script";
-
-    // Create JSONP Request to Google Docs API, then execute the callback function getData
-    const request = $.ajax(
-    {
-        url: spreadsheetUrl,
-        success: function(data) { getData(data) },
-        dataType: 'jsonp'
-    });
-
-    // The callback function the JSONP request will execute to load data from API
-    function getData(data: any)
-    {
-        // Final results will be stored here	
-        var results = [];
-
-        // Get all entries from spreadsheet
-        var entries = data.feed.entry;
-
-        // Set initial previous row, so we can check if the data in the current cell is from a new row
-        var previousRow = 0;
-
-        // Iterate all entries in the spreadsheet
-        for (var i = 0; i < entries.length; i++)
-        {
-            // check what was the latest row we added to our result array, then load it to local variable
-            var latestRow = results[results.length - 1];
-
-            // get current cell
-            var cell = entries[i];
-
-            // get text from current cell
-            var text = cell.content.$t;
-
-            // get the current row
-            var row = cell.gs$cell.row;
-
-            // Determine if the current cell is in the latestRow or is a new row
-            if (row > previousRow) {
-                // this is a new row, create new array for this row
-                var newRow = [];
-
-                // add the cell text to this new row array  
-                newRow.push(text);
-
-                // store the new row array in the final results array
-                results.push(newRow);
-
-                // Increment the previous row, since we added a new row to the final results array
-                previousRow++;
-            } else {
-                // This cell is in an existing row we already added to the results array, add text to this existing row
-                latestRow.push(text);
-            }
-
-        }
-
-        handleResults(results);
-    }
-
-    // Do what ever you please with the final array
-    function handleResults(spreadsheetArray: any)
-    {
-        playerDatabase = spreadsheetArray;
-    }
-
-    let playerDatabase: any[][] = [];
-
     export class Parser
     {
         protected _playersMap: Map<string, Player> = new Map();
@@ -83,7 +18,7 @@ namespace Matchmaker
          * Get Attendance from the textarea, then process the information against
          * database player info to get the available players for the day.
          */
-        public getAttendance(): boolean
+        public async getAttendance(): Promise<boolean>
         {
             const attendance = document.getElementById("Attendance") as HTMLTextAreaElement;
 
@@ -99,7 +34,9 @@ namespace Matchmaker
                 return false;
             }
 
-            if (playerDatabase)
+            await this.getPlayerData();
+
+            if (playerDatabase.length > 0)
             {
                 this.createPlayers();
             }
@@ -121,6 +58,35 @@ namespace Matchmaker
             }
 
             return true;
+        }
+
+        public async getPlayerData()
+        {
+            await gapi.client.sheets.spreadsheets.values.get(
+            {
+                spreadsheetId: '1pRriIo_BLP3RWQ8Hjg9LfSg-ytl9CEn6ct9C4dYry8k',
+                range: 'Sheet1!A2:F100',
+            }).then(function(response: any)
+            {
+                var range = response.result;
+                if (range.values.length > 0)
+                {
+                    for (let i = 0; i < range.values.length; i++)
+                    {
+                        var row = range.values[i];
+                        playerDatabase.push([ row[0], row[1], row[2], row[3], row[4], row[5] ]);
+                        //appendPre(row[0]+", ["+row[1]+"-"+row[2]+"-"+row[3]+"], "+row[4]+", "+row[5]);
+                    }
+                }
+                else
+                {
+                    alert("No Spreadsheet data found.");
+                }
+            },
+            function(response)
+            {
+                alert('Error: ' + response.result.error.message);
+            });
         }
 
         /**

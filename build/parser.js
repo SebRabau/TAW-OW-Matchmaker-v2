@@ -1,54 +1,43 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var playerDatabase = [];
 var Matchmaker;
 (function (Matchmaker) {
-    var spreadsheetUrl = "https://spreadsheets.google.com/feeds/cells/1pRriIo_BLP3RWQ8Hjg9LfSg-ytl9CEn6ct9C4dYry8k/1/public/values?alt=json-in-script";
-    // Create JSONP Request to Google Docs API, then execute the callback function getData
-    var request = $.ajax({
-        url: spreadsheetUrl,
-        success: function (data) { getData(data); },
-        dataType: 'jsonp'
-    });
-    // The callback function the JSONP request will execute to load data from API
-    function getData(data) {
-        // Final results will be stored here	
-        var results = [];
-        // Get all entries from spreadsheet
-        var entries = data.feed.entry;
-        // Set initial previous row, so we can check if the data in the current cell is from a new row
-        var previousRow = 0;
-        // Iterate all entries in the spreadsheet
-        for (var i = 0; i < entries.length; i++) {
-            // check what was the latest row we added to our result array, then load it to local variable
-            var latestRow = results[results.length - 1];
-            // get current cell
-            var cell = entries[i];
-            // get text from current cell
-            var text = cell.content.$t;
-            // get the current row
-            var row = cell.gs$cell.row;
-            // Determine if the current cell is in the latestRow or is a new row
-            if (row > previousRow) {
-                // this is a new row, create new array for this row
-                var newRow = [];
-                // add the cell text to this new row array  
-                newRow.push(text);
-                // store the new row array in the final results array
-                results.push(newRow);
-                // Increment the previous row, since we added a new row to the final results array
-                previousRow++;
-            }
-            else {
-                // This cell is in an existing row we already added to the results array, add text to this existing row
-                latestRow.push(text);
-            }
-        }
-        handleResults(results);
-    }
-    // Do what ever you please with the final array
-    function handleResults(spreadsheetArray) {
-        playerDatabase = spreadsheetArray;
-    }
-    var playerDatabase = [];
     var Parser = /** @class */ (function () {
         function Parser(context) {
             this.context = context;
@@ -59,7 +48,7 @@ var Matchmaker;
         }
         Object.defineProperty(Parser.prototype, "playersToMatchmake", {
             get: function () { return this._playersToMatchmake; },
-            enumerable: false,
+            enumerable: true,
             configurable: true
         });
         /**
@@ -67,31 +56,71 @@ var Matchmaker;
          * database player info to get the available players for the day.
          */
         Parser.prototype.getAttendance = function () {
-            var attendance = document.getElementById("Attendance");
-            if (!attendance) {
-                this.error("Element not found");
-                return false;
-            }
-            if (attendance.value.length === 0) {
-                this.error("Attendance not supplied. Paste event attendance in the text area.");
-                return false;
-            }
-            if (playerDatabase) {
-                this.createPlayers();
-            }
-            else {
-                this.error("Error getting data from spreadsheet.");
-                return false;
-            }
-            this._attendingPlayers = this.parseAttendance(attendance.value);
-            if (!this._attendingPlayers) {
-                this.error("Error parsing Attendance");
-                return false;
-            }
-            else {
-                this.listAvailablePlayers(this._attendingPlayers);
-            }
-            return true;
+            return __awaiter(this, void 0, void 0, function () {
+                var attendance;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            attendance = document.getElementById("Attendance");
+                            if (!attendance) {
+                                this.error("Element not found");
+                                return [2 /*return*/, false];
+                            }
+                            if (attendance.value.length === 0) {
+                                this.error("Attendance not supplied. Paste event attendance in the text area.");
+                                return [2 /*return*/, false];
+                            }
+                            return [4 /*yield*/, this.getPlayerData()];
+                        case 1:
+                            _a.sent();
+                            if (playerDatabase.length > 0) {
+                                this.createPlayers();
+                            }
+                            else {
+                                this.error("Error getting data from spreadsheet.");
+                                return [2 /*return*/, false];
+                            }
+                            this._attendingPlayers = this.parseAttendance(attendance.value);
+                            if (!this._attendingPlayers) {
+                                this.error("Error parsing Attendance");
+                                return [2 /*return*/, false];
+                            }
+                            else {
+                                this.listAvailablePlayers(this._attendingPlayers);
+                            }
+                            return [2 /*return*/, true];
+                    }
+                });
+            });
+        };
+        Parser.prototype.getPlayerData = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, gapi.client.sheets.spreadsheets.values.get({
+                                spreadsheetId: '1pRriIo_BLP3RWQ8Hjg9LfSg-ytl9CEn6ct9C4dYry8k',
+                                range: 'Sheet1!A2:F100',
+                            }).then(function (response) {
+                                var range = response.result;
+                                if (range.values.length > 0) {
+                                    for (var i = 0; i < range.values.length; i++) {
+                                        var row = range.values[i];
+                                        playerDatabase.push([row[0], row[1], row[2], row[3], row[4], row[5]]);
+                                        //appendPre(row[0]+", ["+row[1]+"-"+row[2]+"-"+row[3]+"], "+row[4]+", "+row[5]);
+                                    }
+                                }
+                                else {
+                                    alert("No Spreadsheet data found.");
+                                }
+                            }, function (response) {
+                                alert('Error: ' + response.result.error.message);
+                            })];
+                        case 1:
+                            _a.sent();
+                            return [2 /*return*/];
+                    }
+                });
+            });
         };
         /**
          * Parse attendance into usable map.

@@ -10,23 +10,23 @@ var Matchmaker;
         }
         Object.defineProperty(Player.prototype, "callsign", {
             get: function () { return this._callsign; },
-            enumerable: false,
+            enumerable: true,
             configurable: true
         });
         Object.defineProperty(Player.prototype, "SR", {
             get: function () { return this._SR; },
-            enumerable: false,
+            enumerable: true,
             configurable: true
         });
         Object.defineProperty(Player.prototype, "roles", {
             get: function () { return this._roles; },
-            enumerable: false,
+            enumerable: true,
             configurable: true
         });
         Object.defineProperty(Player.prototype, "team", {
             get: function () { return this._team; },
             set: function (value) { this._team = value; },
-            enumerable: false,
+            enumerable: true,
             configurable: true
         });
         Player.prototype.canPlay = function (role) {

@@ -9,6 +9,8 @@
   },
   "author": "Sebastian Rabau, Philipp von Perponcher, Or Benjamin",
   "dependencies": {
+    "@types/gapi": "0.0.41",
+    "@types/gapi.client.sheets": "^4.0.20201029",
     "@types/jquery": "^3.5.4",
     "firebase": "^7.20.0",
     "firebaseui": "^4.6.1"
