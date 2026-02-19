@@ -1,6 +1,6 @@
-# Overwatch Auto-Phil Matchmaker for TAW Gaming Community
-Find out more about The Art of Warfare (TAW) Gaming Community here: [www.taw.net](www.taw.net).
+# Disclaimer - In a mostly finished state but no longer have any affiliation with TAW, thus this is no longer used nor in active development and likely won't work given input requirements
 
+# Overwatch Auto-Phil Matchmaker for TAW Gaming Community
 ## How to build
 
 To build a dev build (creates only app.js), in root run `sh build_dev.sh`.
